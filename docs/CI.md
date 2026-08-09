@@ -12,7 +12,7 @@ GitHub Actions workflows for the product surface.
 | Job | Commands | Needs validator? |
 |-----|----------|------------------|
 | **sdk** | `npm run test:sdk` · `npm run typecheck:sdk` · IDL/`declare_id!` assert | No |
-| **build-sbf** | install Solana · `npm run build:sbf` → upload `aeon.so` | No |
+| **build-sbf** | install Agave · `cargo-build-sbf` → upload `aeon.so` | No |
 | **e2e** | prepare deploy · `npm run test:e2e` | Yes (anchor test) |
 | **negative** | prepare deploy · `npm run test:negative` (4 legs) | Yes (multi-restart) |
 
@@ -27,15 +27,17 @@ GitHub Actions workflows for the product surface.
 | Tool | Version |
 |------|---------|
 | Node | 20 |
-| Solana / Agave | 1.18.26 |
+| Solana / Agave | **4.1.1** (platform-tools for `cargo-build-sbf`) |
 | Anchor | 0.30.1 |
 | TypeScript | ^5.4 (see package.json) |
 
 Install helper: [`scripts/ci-install-toolchain.sh`](../scripts/ci-install-toolchain.sh)
 
-### Cargo.lock version (CI)
+### Why not Solana 1.18.x for CI build?
 
-`cargo-build-sbf` from Solana **1.18.x** rejects lockfile **version 4** (`requires -Znext-lockfile-bump`). Keep root and `trident-tests/Cargo.lock` at **version 3** (regenerate with `cargo +1.78 generate-lockfile` if a modern cargo rewrites them to v4).
+Solana **1.18.x** ships cargo **~1.75**, which cannot parse crates that require **edition2024** (e.g. `crypto-common` 0.2+, recent `toml_edit`). Current crates.io resolution pulls those via transitive deps (`blake3` → `digest` → …). CI therefore uses **Agave 4.1.1**, matching the verified local build path (`cargo-build-sbf` 4.1.0 / platform-tools v1.54).
+
+Optional: keep `blake3` pinned to **1.5.5** in the lockfile for a narrower dep graph; not required once platform tools are ≥4.x.
 
 ### Solana PATH gotcha (CI)
 

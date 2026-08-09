@@ -8,6 +8,8 @@
 #   - Program keypair: keys/aeon-keypair.json (must match declare_id!).
 #   - Solana install: always `export PATH=...` in the *same* step as install.
 #     GITHUB_PATH only applies to subsequent steps.
+#   - Use Agave/Solana ≥4.x platform-tools (modern cargo). Solana 1.18.x cargo
+#     cannot parse edition2024 crates (crypto-common 0.2+, toml_edit, …).
 
 name: CI
 
@@ -23,11 +25,11 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  # Anchor 0.30.1 is validated against Solana 1.18 platform tools
-  SOLANA_VERSION: "1.18.26"
+  # Agave CLI (cargo-build-sbf + platform-tools). Matches local verified build path.
+  SOLANA_VERSION: "4.1.1"
   ANCHOR_VERSION: "0.30.1"
   NODE_VERSION: "20"
-  RUST_VERSION: "1.78.0"
+  RUST_VERSION: "1.89.0"
   CARGO_TERM_COLOR: always
 
 jobs:
@@ -100,7 +102,9 @@ jobs:
           cargo-build-sbf --version
 
       - name: Build program
-        run: npm run build:sbf
+        run: |
+          export PATH="${HOME}/.local/share/solana/install/active_release/bin:${PATH}"
+          cargo-build-sbf --manifest-path programs/aeon/Cargo.toml
 
       - name: Upload aeon.so
         uses: actions/upload-artifact@v4

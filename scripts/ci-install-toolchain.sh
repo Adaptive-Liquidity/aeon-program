@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Install Solana CLI (platform tools + cargo-build-sbf) and Anchor CLI for CI.
-# Env: SOLANA_VERSION (default 1.18.26), ANCHOR_VERSION (default 0.30.1)
+# Env: SOLANA_VERSION (default 4.1.1), ANCHOR_VERSION (default 0.30.1)
 set -euo pipefail
 
-SOLANA_VERSION="${SOLANA_VERSION:-1.18.26}"
+SOLANA_VERSION="${SOLANA_VERSION:-4.1.1}"
 ANCHOR_VERSION="${ANCHOR_VERSION:-0.30.1}"
 
 export PATH="${HOME}/.local/share/solana/install/active_release/bin:${HOME}/.cargo/bin:${PATH}"
@@ -19,7 +19,7 @@ rustup default stable
 rustup component add rustfmt 2>/dev/null || true
 
 if ! command -v solana >/dev/null 2>&1 || ! cargo-build-sbf --version >/dev/null 2>&1; then
-  echo "→ installing Solana ${SOLANA_VERSION}"
+  echo "→ installing Solana/Agave ${SOLANA_VERSION}"
   sh -c "$(curl -sSfL "https://release.anza.xyz/v${SOLANA_VERSION}/install")"
 fi
 export PATH="${HOME}/.local/share/solana/install/active_release/bin:${PATH}"
