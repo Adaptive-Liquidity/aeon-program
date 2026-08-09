@@ -28,16 +28,20 @@ GitHub Actions workflows for the product surface.
 |------|---------|
 | Node | 20 |
 | Solana / Agave | **4.1.1** (platform-tools for `cargo-build-sbf`) |
-| Anchor | 0.30.1 |
+| Anchor CLI | **0.30.1** (built with rustc **1.78.0**) |
 | TypeScript | ^5.4 (see package.json) |
 
 Install helper: [`scripts/ci-install-toolchain.sh`](../scripts/ci-install-toolchain.sh)
 
-### Why not Solana 1.18.x for CI build?
+### Why Agave 4.1.1 (not Solana 1.18.x) for SBF build?
 
-Solana **1.18.x** ships cargo **~1.75**, which cannot parse crates that require **edition2024** (e.g. `crypto-common` 0.2+, recent `toml_edit`). Current crates.io resolution pulls those via transitive deps (`blake3` → `digest` → …). CI therefore uses **Agave 4.1.1**, matching the verified local build path (`cargo-build-sbf` 4.1.0 / platform-tools v1.54).
+Solana **1.18.x** ships cargo **~1.75**, which cannot parse crates that require **edition2024** (e.g. `crypto-common` 0.2+, recent `toml_edit`). Current crates.io resolution pulls those via transitive deps. CI uses **Agave 4.1.1**, matching the verified local path (`cargo-build-sbf` 4.1.0 / platform-tools v1.54).
 
-Optional: keep `blake3` pinned to **1.5.5** in the lockfile for a narrower dep graph; not required once platform tools are ≥4.x.
+`blake3` is pinned to **1.5.5** in the lockfile as belt-and-suspenders.
+
+### Anchor CLI install
+
+`anchor-cli` 0.30.1 does not compile on modern stable rustc (`time` crate E0282). The install script builds it with **`cargo +1.78.0 install … anchor-cli`**.
 
 ### Solana PATH gotcha (CI)
 

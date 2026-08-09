@@ -10,6 +10,7 @@
 #     GITHUB_PATH only applies to subsequent steps.
 #   - Use Agave/Solana ≥4.x platform-tools (modern cargo). Solana 1.18.x cargo
 #     cannot parse edition2024 crates (crypto-common 0.2+, toml_edit, …).
+#   - Anchor CLI 0.30.1 must be built with rustc 1.78 (see ci-install-toolchain.sh).
 
 name: CI
 
@@ -119,7 +120,7 @@ jobs:
     name: Positive e2e (localnet)
     needs: build-sbf
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -133,17 +134,18 @@ jobs:
       - name: Install JS deps
         run: npm ci
 
-      - name: Cache cargo / solana
+      - name: Cache cargo / solana / anchor
         uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
+            ~/.cargo/bin
             ~/.cache/solana
             ~/.local/share/solana
-          key: sbf-${{ runner.os }}-${{ env.SOLANA_VERSION }}-${{ hashFiles('programs/**/Cargo.toml', 'Cargo.lock') }}
+          key: e2e-${{ runner.os }}-${{ env.SOLANA_VERSION }}-anchor${{ env.ANCHOR_VERSION }}-${{ hashFiles('programs/**/Cargo.toml', 'Cargo.lock') }}
           restore-keys: |
-            sbf-${{ runner.os }}-${{ env.SOLANA_VERSION }}-
+            e2e-${{ runner.os }}-${{ env.SOLANA_VERSION }}-anchor${{ env.ANCHOR_VERSION }}-
 
       - name: Install Solana + Anchor
         run: bash scripts/ci-install-toolchain.sh
@@ -185,17 +187,18 @@ jobs:
       - name: Install JS deps
         run: npm ci
 
-      - name: Cache cargo / solana
+      - name: Cache cargo / solana / anchor
         uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
+            ~/.cargo/bin
             ~/.cache/solana
             ~/.local/share/solana
-          key: sbf-${{ runner.os }}-${{ env.SOLANA_VERSION }}-${{ hashFiles('programs/**/Cargo.toml', 'Cargo.lock') }}
+          key: e2e-${{ runner.os }}-${{ env.SOLANA_VERSION }}-anchor${{ env.ANCHOR_VERSION }}-${{ hashFiles('programs/**/Cargo.toml', 'Cargo.lock') }}
           restore-keys: |
-            sbf-${{ runner.os }}-${{ env.SOLANA_VERSION }}-
+            e2e-${{ runner.os }}-${{ env.SOLANA_VERSION }}-anchor${{ env.ANCHOR_VERSION }}-
 
       - name: Install Solana + Anchor
         run: bash scripts/ci-install-toolchain.sh

@@ -5,6 +5,8 @@ set -euo pipefail
 
 SOLANA_VERSION="${SOLANA_VERSION:-4.1.1}"
 ANCHOR_VERSION="${ANCHOR_VERSION:-0.30.1}"
+# Anchor 0.30.1 fails to compile on rustc ≥1.8x (time crate E0282, etc.)
+ANCHOR_BUILD_TOOLCHAIN="${ANCHOR_BUILD_TOOLCHAIN:-1.78.0}"
 
 export PATH="${HOME}/.local/share/solana/install/active_release/bin:${HOME}/.cargo/bin:${PATH}"
 
@@ -14,9 +16,10 @@ if ! command -v rustup >/dev/null 2>&1; then
   source "${HOME}/.cargo/env"
 fi
 
-# Stable rustc for host tools; platform-tools bring their own SBF toolchain
+# Stable for host; platform-tools bring SBF toolchain; pin for Anchor CLI build
 rustup default stable
 rustup component add rustfmt 2>/dev/null || true
+rustup toolchain install "${ANCHOR_BUILD_TOOLCHAIN}" --profile minimal
 
 if ! command -v solana >/dev/null 2>&1 || ! cargo-build-sbf --version >/dev/null 2>&1; then
   echo "→ installing Solana/Agave ${SOLANA_VERSION}"
@@ -27,13 +30,12 @@ echo "solana: $(solana --version)"
 echo "cargo-build-sbf: $(cargo-build-sbf --version)"
 
 if ! command -v anchor >/dev/null 2>&1 || ! anchor --version 2>/dev/null | grep -q "${ANCHOR_VERSION}"; then
-  echo "→ installing Anchor ${ANCHOR_VERSION} via avm"
-  if ! command -v avm >/dev/null 2>&1; then
-    cargo install --git https://github.com/coral-xyz/anchor --tag "v${ANCHOR_VERSION}" avm --locked --force 2>/dev/null \
-      || cargo install --git https://github.com/coral-xyz/anchor avm --locked --force
-  fi
-  avm install "${ANCHOR_VERSION}"
-  avm use "${ANCHOR_VERSION}"
+  echo "→ installing Anchor CLI ${ANCHOR_VERSION} with rustc ${ANCHOR_BUILD_TOOLCHAIN}"
+  # Prefer direct anchor-cli install over avm (avm re-builds with default rustc).
+  cargo +"${ANCHOR_BUILD_TOOLCHAIN}" install --git https://github.com/coral-xyz/anchor \
+    --tag "v${ANCHOR_VERSION}" anchor-cli --locked --force \
+    || cargo +"${ANCHOR_BUILD_TOOLCHAIN}" install --git https://github.com/coral-xyz/anchor \
+      --tag "v${ANCHOR_VERSION}" anchor-cli --force
 fi
 echo "anchor: $(anchor --version)"
 
