@@ -2,12 +2,13 @@
 # Prepare target/deploy for anchor test / localnet:
 #   - aeon-keypair.json matching declare_id!
 #   - aeon.so (build if missing)
+#   - target/idl/aeon.json from committed client/idl (skip-build path)
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 export PATH="${HOME}/.local/share/solana/install/active_release/bin:${HOME}/.cargo/bin:${PATH}"
 
-mkdir -p target/deploy
+mkdir -p target/deploy target/idl
 
 KEY_SRC="${AEON_KEYPAIR_PATH:-keys/aeon-keypair.json}"
 if [[ -n "${AEON_KEYPAIR_JSON:-}" ]]; then
@@ -36,14 +37,17 @@ if [[ ! -f target/deploy/aeon.so ]]; then
   cargo-build-sbf --manifest-path programs/aeon/Cargo.toml
 fi
 
-# Sanity: IDL address matches
-if [[ -f client/idl/aeon.json ]]; then
-  IDL_ADDR=$(python3 -c "import json; print(json.load(open('client/idl/aeon.json'))['address'])")
-  if [[ "${IDL_ADDR}" != "${EXPECTED}" ]]; then
-    echo "error: client/idl/aeon.json address ${IDL_ADDR} != ${EXPECTED}" >&2
-    exit 1
-  fi
-  echo "→ IDL address OK"
+# Committed IDL → location Anchor workspace expects when using --skip-build
+if [[ ! -f client/idl/aeon.json ]]; then
+  echo "error: client/idl/aeon.json missing" >&2
+  exit 1
 fi
+IDL_ADDR=$(python3 -c "import json; print(json.load(open('client/idl/aeon.json'))['address'])")
+if [[ "${IDL_ADDR}" != "${EXPECTED}" ]]; then
+  echo "error: client/idl/aeon.json address ${IDL_ADDR} != ${EXPECTED}" >&2
+  exit 1
+fi
+cp client/idl/aeon.json target/idl/aeon.json
+echo "→ IDL address OK (client/idl → target/idl)"
 
 echo "✓ deploy artifacts ready"
