@@ -33,6 +33,10 @@ GitHub Actions workflows for the product surface.
 
 Install helper: [`scripts/ci-install-toolchain.sh`](../scripts/ci-install-toolchain.sh)
 
+### Cargo.lock version (CI)
+
+`cargo-build-sbf` from Solana **1.18.x** rejects lockfile **version 4** (`requires -Znext-lockfile-bump`). Keep root and `trident-tests/Cargo.lock` at **version 3** (regenerate with `cargo +1.78 generate-lockfile` if a modern cargo rewrites them to v4).
+
 ### Solana PATH gotcha (CI)
 
 Anza’s installer only appends to `~/.profile`. In GitHub Actions:
