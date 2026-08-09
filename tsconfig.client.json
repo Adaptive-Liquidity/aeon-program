@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "lib": ["es2019"],
+    "module": "commonjs",
+    "target": "es2019",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "declaration": true,
+    "outDir": "client/dist",
+    "rootDir": "client",
+    "types": ["node"]
+  },
+  "include": ["client/**/*.ts"],
+  "exclude": ["client/__tests__/**", "client/dist/**"]
+}

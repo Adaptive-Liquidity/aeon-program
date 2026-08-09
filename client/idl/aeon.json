@@ -1,0 +1,1366 @@
+{
+  "address": "8i5E3R2to4R57TEPFs5DmxhDMAUUvWcXjFZup6MnCMEn",
+  "metadata": {
+    "name": "aeon",
+    "version": "0.1.0",
+    "spec": "0.1.0"
+  },
+  "instructions": [
+    {
+      "name": "initialize_config",
+      "discriminator": [
+        208,
+        127,
+        21,
+        1,
+        194,
+        190,
+        196,
+        70
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "writable": true
+        },
+        {
+          "name": "system_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "aeon_mint",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "register_agent",
+      "discriminator": [
+        135,
+        157,
+        66,
+        195,
+        2,
+        113,
+        175,
+        30
+      ],
+      "accounts": [
+        {
+          "name": "agent",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config"
+        },
+        {
+          "name": "agent_identity",
+          "writable": true
+        },
+        {
+          "name": "cri",
+          "writable": true
+        },
+        {
+          "name": "system_program"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "issue_authority",
+      "discriminator": [
+        46,
+        62,
+        161,
+        139,
+        184,
+        96,
+        84,
+        23
+      ],
+      "accounts": [
+        {
+          "name": "agent",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "writable": true
+        },
+        {
+          "name": "agent_identity"
+        },
+        {
+          "name": "parent_authority",
+          "optional": true
+        },
+        {
+          "name": "authority",
+          "writable": true
+        },
+        {
+          "name": "system_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "authority_id",
+          "type": "u64"
+        },
+        {
+          "name": "budget",
+          "type": "u64"
+        },
+        {
+          "name": "max_per_tx",
+          "type": "u64"
+        },
+        {
+          "name": "max_total",
+          "type": "u64"
+        },
+        {
+          "name": "categories",
+          "type": {
+            "vec": {
+              "array": [
+                "u8",
+                16
+              ]
+            }
+          }
+        },
+        {
+          "name": "parent_id",
+          "type": "u64"
+        },
+        {
+          "name": "expiry_slot",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "revoke_authority",
+      "discriminator": [
+        233,
+        254,
+        239,
+        15,
+        49,
+        183,
+        105,
+        21
+      ],
+      "accounts": [
+        {
+          "name": "agent",
+          "signer": true
+        },
+        {
+          "name": "config"
+        },
+        {
+          "name": "authority",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "authority_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "pay",
+      "discriminator": [
+        119,
+        18,
+        216,
+        65,
+        192,
+        117,
+        122,
+        220
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "signer": true
+        },
+        {
+          "name": "payee"
+        },
+        {
+          "name": "config"
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "payer_cri",
+          "writable": true
+        },
+        {
+          "name": "payee_cri",
+          "writable": true
+        },
+        {
+          "name": "payer_token",
+          "writable": true
+        },
+        {
+          "name": "payee_token",
+          "writable": true
+        },
+        {
+          "name": "aeon_mint"
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "authority_id",
+          "type": "u64"
+        },
+        {
+          "name": "category",
+          "type": {
+            "array": [
+              "u8",
+              16
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "create_escrow",
+      "discriminator": [
+        253,
+        215,
+        165,
+        116,
+        36,
+        108,
+        68,
+        80
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "payee"
+        },
+        {
+          "name": "config",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "escrow",
+          "writable": true
+        },
+        {
+          "name": "escrow_vault",
+          "writable": true
+        },
+        {
+          "name": "payer_token",
+          "writable": true
+        },
+        {
+          "name": "aeon_mint"
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "system_program"
+        },
+        {
+          "name": "rent"
+        }
+      ],
+      "args": [
+        {
+          "name": "escrow_id",
+          "type": "u64"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "authority_id",
+          "type": "u64"
+        },
+        {
+          "name": "category",
+          "type": {
+            "array": [
+              "u8",
+              16
+            ]
+          }
+        },
+        {
+          "name": "condition_type",
+          "type": "u8"
+        },
+        {
+          "name": "condition_data",
+          "type": {
+            "array": [
+              "u8",
+              64
+            ]
+          }
+        },
+        {
+          "name": "expiry_slot",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "release_escrow",
+      "discriminator": [
+        146,
+        253,
+        129,
+        233,
+        20,
+        145,
+        181,
+        206
+      ],
+      "accounts": [
+        {
+          "name": "releaser",
+          "signer": true
+        },
+        {
+          "name": "escrow",
+          "writable": true
+        },
+        {
+          "name": "escrow_vault",
+          "writable": true
+        },
+        {
+          "name": "payee_token",
+          "writable": true
+        },
+        {
+          "name": "payer_cri",
+          "writable": true
+        },
+        {
+          "name": "payee_cri",
+          "writable": true
+        },
+        {
+          "name": "aeon_mint"
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "escrow_id",
+          "type": "u64"
+        },
+        {
+          "name": "witness",
+          "type": {
+            "array": [
+              "u8",
+              64
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "cancel_escrow",
+      "discriminator": [
+        156,
+        203,
+        54,
+        179,
+        38,
+        72,
+        33,
+        21
+      ],
+      "accounts": [
+        {
+          "name": "canceller",
+          "signer": true
+        },
+        {
+          "name": "escrow",
+          "writable": true
+        },
+        {
+          "name": "escrow_vault",
+          "writable": true
+        },
+        {
+          "name": "payer_token",
+          "writable": true
+        },
+        {
+          "name": "payer_cri",
+          "writable": true
+        },
+        {
+          "name": "aeon_mint"
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "escrow_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "atomic_split",
+      "discriminator": [
+        48,
+        8,
+        165,
+        93,
+        2,
+        50,
+        35,
+        231
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "signer": true
+        },
+        {
+          "name": "payee_a"
+        },
+        {
+          "name": "payee_b",
+          "optional": true
+        },
+        {
+          "name": "config"
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "payer_token",
+          "writable": true
+        },
+        {
+          "name": "payee_a_token",
+          "writable": true
+        },
+        {
+          "name": "payee_b_token",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "payer_cri",
+          "writable": true
+        },
+        {
+          "name": "payee_a_cri",
+          "writable": true
+        },
+        {
+          "name": "payee_b_cri",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "aeon_mint"
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "authority_id",
+          "type": "u64"
+        },
+        {
+          "name": "amounts",
+          "type": {
+            "vec": "u64"
+          }
+        },
+        {
+          "name": "category",
+          "type": {
+            "array": [
+              "u8",
+              16
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "create_org",
+      "discriminator": [
+        48,
+        115,
+        187,
+        249,
+        36,
+        3,
+        186,
+        175
+      ],
+      "accounts": [
+        {
+          "name": "creator",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "writable": true
+        },
+        {
+          "name": "creator_identity"
+        },
+        {
+          "name": "organization",
+          "writable": true
+        },
+        {
+          "name": "org_treasury",
+          "writable": true
+        },
+        {
+          "name": "creator_member",
+          "writable": true
+        },
+        {
+          "name": "aeon_mint"
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "system_program"
+        },
+        {
+          "name": "rent"
+        }
+      ],
+      "args": [
+        {
+          "name": "org_id",
+          "type": "u64"
+        },
+        {
+          "name": "name_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "creator_share_bps",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "deposit_to_org",
+      "discriminator": [
+        20,
+        39,
+        3,
+        24,
+        191,
+        146,
+        173,
+        32
+      ],
+      "accounts": [
+        {
+          "name": "member",
+          "signer": true
+        },
+        {
+          "name": "organization",
+          "writable": true
+        },
+        {
+          "name": "org_member"
+        },
+        {
+          "name": "org_treasury",
+          "writable": true
+        },
+        {
+          "name": "member_token",
+          "writable": true
+        },
+        {
+          "name": "aeon_mint"
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "org_id",
+          "type": "u64"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "org_split",
+      "discriminator": [
+        100,
+        227,
+        62,
+        222,
+        189,
+        106,
+        19,
+        24
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true
+        },
+        {
+          "name": "organization",
+          "writable": true
+        },
+        {
+          "name": "admin_member"
+        },
+        {
+          "name": "recipient_member"
+        },
+        {
+          "name": "recipient_token",
+          "writable": true
+        },
+        {
+          "name": "org_treasury",
+          "writable": true
+        },
+        {
+          "name": "aeon_mint"
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "org_id",
+          "type": "u64"
+        },
+        {
+          "name": "amounts",
+          "type": {
+            "vec": "u64"
+          }
+        }
+      ]
+    },
+    {
+      "name": "dissolve_org",
+      "discriminator": [
+        143,
+        107,
+        214,
+        170,
+        100,
+        0,
+        213,
+        54
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true
+        },
+        {
+          "name": "organization",
+          "writable": true
+        },
+        {
+          "name": "admin_member"
+        },
+        {
+          "name": "admin_token",
+          "writable": true
+        },
+        {
+          "name": "member_b",
+          "optional": true
+        },
+        {
+          "name": "member_b_token",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "org_treasury",
+          "writable": true
+        },
+        {
+          "name": "aeon_mint"
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "org_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "join_org",
+      "discriminator": [
+        109,
+        42,
+        124,
+        13,
+        143,
+        30,
+        147,
+        188
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "new_agent"
+        },
+        {
+          "name": "organization",
+          "writable": true
+        },
+        {
+          "name": "admin_member"
+        },
+        {
+          "name": "agent_identity"
+        },
+        {
+          "name": "new_member",
+          "writable": true
+        },
+        {
+          "name": "system_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "org_id",
+          "type": "u64"
+        },
+        {
+          "name": "role",
+          "type": "u8"
+        },
+        {
+          "name": "share_bps",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "set_member_share",
+      "discriminator": [
+        201,
+        0,
+        164,
+        254,
+        106,
+        117,
+        223,
+        152
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true
+        },
+        {
+          "name": "organization",
+          "writable": true
+        },
+        {
+          "name": "admin_member"
+        },
+        {
+          "name": "target_member",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "org_id",
+          "type": "u64"
+        },
+        {
+          "name": "new_share_bps",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "reclaim_org_residual",
+      "discriminator": [
+        238,
+        65,
+        100,
+        177,
+        211,
+        144,
+        234,
+        246
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "signer": true
+        },
+        {
+          "name": "organization",
+          "writable": true
+        },
+        {
+          "name": "authority_member"
+        },
+        {
+          "name": "org_treasury",
+          "writable": true
+        },
+        {
+          "name": "destination",
+          "writable": true
+        },
+        {
+          "name": "aeon_mint"
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "org_id",
+          "type": "u64"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Config",
+      "discriminator": [
+        155,
+        12,
+        170,
+        224,
+        30,
+        250,
+        204,
+        130
+      ]
+    },
+    {
+      "name": "AgentIdentity",
+      "discriminator": [
+        11,
+        149,
+        31,
+        27,
+        186,
+        76,
+        241,
+        72
+      ]
+    },
+    {
+      "name": "Cri",
+      "discriminator": [
+        237,
+        181,
+        52,
+        32,
+        235,
+        78,
+        3,
+        186
+      ]
+    },
+    {
+      "name": "Authority",
+      "discriminator": [
+        36,
+        108,
+        254,
+        18,
+        167,
+        144,
+        27,
+        36
+      ]
+    },
+    {
+      "name": "Escrow",
+      "discriminator": [
+        31,
+        213,
+        123,
+        187,
+        186,
+        22,
+        218,
+        155
+      ]
+    },
+    {
+      "name": "Organization",
+      "discriminator": [
+        145,
+        38,
+        152,
+        251,
+        91,
+        57,
+        118,
+        160
+      ]
+    },
+    {
+      "name": "OrgMember",
+      "discriminator": [
+        18,
+        130,
+        142,
+        45,
+        220,
+        198,
+        3,
+        26
+      ]
+    }
+  ],
+  "types": [
+    {
+      "name": "Config",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": "pubkey"
+          },
+          {
+            "name": "aeon_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "authority_counter",
+            "type": "u64"
+          },
+          {
+            "name": "escrow_counter",
+            "type": "u64"
+          },
+          {
+            "name": "org_counter",
+            "type": "u64"
+          },
+          {
+            "name": "receipt_counter",
+            "type": "u64"
+          },
+          {
+            "name": "min_solvency_bps",
+            "type": "u16"
+          },
+          {
+            "name": "paused",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AgentIdentity",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "created_slot",
+            "type": "u64"
+          },
+          {
+            "name": "active",
+            "type": "bool"
+          },
+          {
+            "name": "metadata_uri_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cri",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "successful_settlements",
+            "type": "u64"
+          },
+          {
+            "name": "failed_settlements",
+            "type": "u64"
+          },
+          {
+            "name": "successful_commitments",
+            "type": "u64"
+          },
+          {
+            "name": "failed_commitments",
+            "type": "u64"
+          },
+          {
+            "name": "volume_settled",
+            "type": "u64"
+          },
+          {
+            "name": "last_active_slot",
+            "type": "u64"
+          },
+          {
+            "name": "created_slot",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Authority",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority_id",
+            "type": "u64"
+          },
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "parent_id",
+            "type": "u64"
+          },
+          {
+            "name": "depth",
+            "type": "u8"
+          },
+          {
+            "name": "budget",
+            "type": "u64"
+          },
+          {
+            "name": "spent",
+            "type": "u64"
+          },
+          {
+            "name": "max_per_tx",
+            "type": "u64"
+          },
+          {
+            "name": "max_total",
+            "type": "u64"
+          },
+          {
+            "name": "category_count",
+            "type": "u8"
+          },
+          {
+            "name": "categories",
+            "type": {
+              "array": [
+                {
+                  "array": [
+                    "u8",
+                    16
+                  ]
+                },
+                8
+              ]
+            }
+          },
+          {
+            "name": "blocked_count",
+            "type": "u8"
+          },
+          {
+            "name": "blocked_recipients",
+            "type": {
+              "array": [
+                "pubkey",
+                4
+              ]
+            }
+          },
+          {
+            "name": "require_min_reserve",
+            "type": "u64"
+          },
+          {
+            "name": "expiry_slot",
+            "type": "u64"
+          },
+          {
+            "name": "status",
+            "type": "u8"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Escrow",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "escrow_id",
+            "type": "u64"
+          },
+          {
+            "name": "payer",
+            "type": "pubkey"
+          },
+          {
+            "name": "payee",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "authority_id",
+            "type": "u64"
+          },
+          {
+            "name": "category",
+            "type": {
+              "array": [
+                "u8",
+                16
+              ]
+            }
+          },
+          {
+            "name": "condition_type",
+            "type": "u8"
+          },
+          {
+            "name": "condition_data",
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
+            }
+          },
+          {
+            "name": "status",
+            "type": "u8"
+          },
+          {
+            "name": "created_slot",
+            "type": "u64"
+          },
+          {
+            "name": "expiry_slot",
+            "type": "u64"
+          },
+          {
+            "name": "vault_bump",
+            "type": "u8"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Organization",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "org_id",
+            "type": "u64"
+          },
+          {
+            "name": "name_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
+          {
+            "name": "member_count",
+            "type": "u16"
+          },
+          {
+            "name": "total_share_bps",
+            "type": "u16"
+          },
+          {
+            "name": "status",
+            "type": "u8"
+          },
+          {
+            "name": "created_slot",
+            "type": "u64"
+          },
+          {
+            "name": "treasury_bump",
+            "type": "u8"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OrgMember",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "org_id",
+            "type": "u64"
+          },
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "role",
+            "type": "u8"
+          },
+          {
+            "name": "share_bps",
+            "type": "u16"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ]
+}

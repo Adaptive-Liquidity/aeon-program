@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>AEON Solana Program</title>
+<style>
+:root{--bg:#0b1220;--panel:#121a2b;--border:#1e2a44;--text:#e8eefc;--muted:#8b9bb8;--ok:#22c55e;--stub:#f59e0b;--accent:#38bdf8}
+*{box-sizing:border-box}body{margin:0;font-family:ui-sans-serif,system-ui,sans-serif;background:radial-gradient(1000px 500px at 10% -10%,#1a2744,var(--bg));color:var(--text);min-height:100vh}
+header{padding:28px 24px;border-bottom:1px solid var(--border);background:rgba(10,16,28,.75);backdrop-filter:blur(8px);position:sticky;top:0}
+h1{margin:0 0 6px;font-size:1.4rem} .sub{color:var(--muted);font-size:.9rem}
+main{max-width:960px;margin:0 auto;padding:24px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:16px 0 28px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px}
+.card .l{color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em}
+.card .v{font-size:1.35rem;font-weight:700;margin-top:4px}
+table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:24px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--border);font-size:.88rem}
+th{color:var(--muted);background:#0e1628}
+.badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.72rem;font-weight:700}
+.badge.ok{background:rgba(34,197,94,.15);color:var(--ok)}
+.badge.stub{background:rgba(245,158,11,.15);color:var(--stub)}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.8rem;color:var(--accent)}
+h2{font-size:1.05rem;margin:28px 0 12px}
+pre{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px;overflow:auto;font-size:.78rem;line-height:1.45}
+</style>
+</head>
+<body>
+<header>
+  <h1>AEON Solana Program</h1>
+  <div class="sub">Anchor 0.30.1 scaffold · cargo check passed · ready for Heavy security review</div>
+</header>
+<main>
+  <div class="grid">
+    <div class="card"><div class="l">Instructions</div><div class="v">13</div></div>
+    <div class="card"><div class="l">Implemented</div><div class="v" style="color:var(--ok)">3</div></div>
+    <div class="card"><div class="l">Stubs</div><div class="v" style="color:var(--stub)">10</div></div>
+    <div class="card"><div class="l">Accounts</div><div class="v">9</div></div>
+  </div>
+
+  <h2>Instruction status</h2>
+  <table>
+    <thead><tr><th>Instruction</th><th>Status</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>initialize_config</code></td><td><span class="badge ok">DONE</span></td><td>Config PDA, mint, counters</td></tr>
+      <tr><td><code>register_agent</code></td><td><span class="badge ok">DONE</span></td><td>AgentIdentity + CRI PDAs</td></tr>
+      <tr><td><code>issue_authority</code></td><td><span class="badge ok">DONE</span></td><td>Root + parent depth/budget/policy</td></tr>
+      <tr><td><code>revoke_authority</code></td><td><span class="badge stub">STUB</span></td><td>Accounts wired</td></tr>
+      <tr><td><code>pay</code></td><td><span class="badge stub">STUB</span></td><td>Needs token CPI</td></tr>
+      <tr><td><code>create_escrow</code></td><td><span class="badge stub">STUB</span></td><td>Vault PDA seeds set</td></tr>
+      <tr><td><code>release_escrow</code></td><td><span class="badge stub">STUB</span></td><td>CRI accounts ready</td></tr>
+      <tr><td><code>cancel_escrow</code></td><td><span class="badge stub">STUB</span></td><td>Refund path stub</td></tr>
+      <tr><td><code>atomic_split</code></td><td><span class="badge stub">STUB</span></td><td>Remaining accounts pattern</td></tr>
+      <tr><td><code>create_org</code></td><td><span class="badge stub">STUB</span></td><td>Org + member + treasury</td></tr>
+      <tr><td><code>deposit_to_org</code></td><td><span class="badge stub">STUB</span></td><td>Member-gated</td></tr>
+      <tr><td><code>org_split</code></td><td><span class="badge stub">STUB</span></td><td>Admin-gated</td></tr>
+      <tr><td><code>dissolve_org</code></td><td><span class="badge stub">STUB</span></td><td>share_bps residual</td></tr>
+    </tbody>
+  </table>
+
+  <h2>PDA seeds</h2>
+  <pre>Config          ["aeon_config"]
+AgentIdentity   ["agent", agent]
+CRI             ["cri", agent]
+Authority       ["authority", id_le]
+Escrow          ["escrow", id_le]
+EscrowVault     ["escrow_vault", id_le]
+Organization    ["org", id_le]
+OrgTreasury     ["org_treasury", id_le]
+OrgMember       ["org_member", id_le, agent]
+Receipt         ["receipt", id_le]</pre>
+
+  <h2>Build</h2>
+  <pre>cd aeon-program
+cargo check -p aeon    # verified in scaffold environment
+anchor build           # requires full Anchor + Solana CLI
+anchor test            # runs tests/aeon.ts</pre>
+
+  <h2>Heavy review checklist (next)</h2>
+  <pre>1. Signer / PDA ownership on all implemented ixs
+2. Parent authority optional account handling
+3. authority_id == counter+1 race / client correctness
+4. Category intersection edge cases
+5. No fund-moving path without authority (when implementing pay)</pre>
+</main>
+</body>
+</html>
