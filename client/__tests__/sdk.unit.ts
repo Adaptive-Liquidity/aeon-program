@@ -18,6 +18,7 @@ import {
   planRevokeTree,
   type AuthorityNode,
 } from "../index";
+import { planRevoke } from "../examples/04-revoke-tree";
 
 describe("AEON Agent SDK (offline)", () => {
   it("program id is valid", () => {
@@ -111,5 +112,33 @@ describe("AEON Agent SDK (offline)", () => {
     expect(ROLE.MEMBER).to.equal(1);
     expect(CONDITION.IMMEDIATE).to.equal(0);
     expect(CONDITION.TIMEOUT).to.equal(4);
+  });
+
+  it("examples planRevoke matches planRevokeTree", () => {
+    const agent = Keypair.generate().publicKey;
+    const addr = (id: number) => authorityPda(id)[0];
+    const nodes: AuthorityNode[] = [
+      {
+        authorityId: 10,
+        parentId: 0,
+        depth: 0,
+        status: AUTH_STATUS.ACTIVE,
+        address: addr(10),
+        agent,
+      },
+      {
+        authorityId: 11,
+        parentId: 10,
+        depth: 1,
+        status: AUTH_STATUS.ACTIVE,
+        address: addr(11),
+        agent,
+      },
+    ];
+    const fromExample = planRevoke(nodes, 10);
+    const fromCore = planRevokeTree(nodes, 10);
+    expect(fromExample.map((b) => b.authorityId)).to.deep.equal(
+      fromCore.map((b) => b.authorityId)
+    );
   });
 });

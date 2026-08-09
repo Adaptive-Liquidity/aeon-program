@@ -1,0 +1,91 @@
+# AEON — nightly Trident P2 fuzz (remaining_accounts / cascade / spent)
+# Not required on every PR (heavy). Manual: workflow_dispatch.
+
+name: Fuzz nightly (Trident P2)
+
+on:
+  schedule:
+    # 06:00 UTC daily
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: fuzz-nightly
+  cancel-in-progress: false
+
+env:
+  SOLANA_VERSION: "1.18.26"
+  ANCHOR_VERSION: "0.30.1"
+  NODE_VERSION: "20"
+  CARGO_TERM_COLOR: always
+
+jobs:
+  fuzz-p2:
+    name: Trident remaining_accounts_p2
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install JS deps
+        run: npm ci
+
+      - name: Cache cargo / solana / trident
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ~/.cargo/bin
+            ~/.cache/solana
+            ~/.local/share/solana
+            trident-tests/target
+          key: fuzz-${{ runner.os }}-${{ env.SOLANA_VERSION }}-${{ hashFiles('trident-tests/Cargo.toml', 'programs/**/Cargo.toml') }}
+          restore-keys: |
+            fuzz-${{ runner.os }}-${{ env.SOLANA_VERSION }}-
+
+      - name: Install Solana + Anchor
+        run: bash scripts/ci-install-toolchain.sh
+
+      - name: Install Trident CLI 0.12
+        run: |
+          set -euo pipefail
+          if ! command -v trident >/dev/null 2>&1; then
+            cargo install trident-cli --version 0.12.0 --locked || \
+              cargo install trident-cli --version 0.12.0
+          fi
+          trident --version || true
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+
+      - name: System deps (OpenSSL) for trident-fuzz
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pkg-config libssl-dev
+
+      - name: Prepare keypair + build SBF
+        run: |
+          bash scripts/ci-prepare-deploy.sh
+          # Always rebuild so .so matches current sources
+          npm run build:sbf
+
+      - name: Run P2 fuzz
+        run: npm run test:fuzz:p2
+
+      - name: Upload fuzz artifacts (if any)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trident-p2-logs
+          path: |
+            trident-tests/fuzzing_*.json
+            trident-tests/fuzzing_*.html
+            trident-tests/trident_logs_*.log
+          if-no-files-found: ignore
+          retention-days: 14

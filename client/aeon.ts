@@ -291,7 +291,7 @@ export class AeonClient {
         parentAuthority,
         authority: this.authorityAddress(id),
         systemProgram: SystemProgram.programId,
-      })
+      } as AnyAccounts)
       .signers(opts.signers ?? [])
       .rpc({ skipPreflight: opts.skipPreflight });
 
@@ -343,7 +343,7 @@ export class AeonClient {
         payeeToken: params.payeeToken,
         aeonMint: params.aeonMint ?? (await this.mintAddress()),
         tokenProgram,
-      })
+      } as AnyAccounts)
       .signers(opts.signers ?? [])
       .rpc({ skipPreflight: opts.skipPreflight });
   }
@@ -384,7 +384,7 @@ export class AeonClient {
         tokenProgram,
         systemProgram: SystemProgram.programId,
         rent: SYSVAR_RENT_PUBKEY,
-      })
+      } as AnyAccounts)
       .signers(opts.signers ?? [])
       .rpc({ skipPreflight: opts.skipPreflight });
 
@@ -472,7 +472,7 @@ export class AeonClient {
         payeeBToken: b?.token ?? null,
         aeonMint: params.aeonMint ?? (await this.mintAddress()),
         tokenProgram,
-      })
+      } as AnyAccounts)
       .signers(opts.signers ?? [])
       .rpc({ skipPreflight: opts.skipPreflight });
   }
@@ -613,7 +613,7 @@ export class AeonClient {
         orgTreasury: this.orgTreasuryAddress(params.orgId),
         aeonMint: params.aeonMint ?? (await this.mintAddress()),
         tokenProgram,
-      })
+      } as AnyAccounts)
       .signers(opts.signers ?? [])
       .rpc({ skipPreflight: opts.skipPreflight });
   }
@@ -663,7 +663,7 @@ export class AeonClient {
     const plan = planRevokeTree(nodes, rootId);
     const sigs: TransactionSignature[] = [];
     for (const batch of plan) {
-      const children = batch.children.map((id) => this.authorityAddress(id));
+      const children = batch.children.map((c) => c.address);
       sigs.push(await this.revokeAuthority(batch.authorityId, children, opts));
     }
     return sigs;

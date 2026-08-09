@@ -1,0 +1,211 @@
+# AEON — PR / push CI
+# Jobs: sdk · build-sbf · e2e · negative
+# Fuzz is nightly only — see fuzz-nightly.yml
+#
+# Toolchain notes:
+#   - Prefer cargo-build-sbf + committed IDL (full `anchor build` IDL regen
+#     is broken on rustc ≥1.97 / anchor-syn 0.30.1).
+#   - Program keypair: keys/aeon-keypair.json (must match declare_id!).
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Anchor 0.30.1 is validated against Solana 1.18 platform tools
+  SOLANA_VERSION: "1.18.26"
+  ANCHOR_VERSION: "0.30.1"
+  NODE_VERSION: "20"
+  RUST_VERSION: "1.78.0"
+  CARGO_TERM_COLOR: always
+
+jobs:
+  # ── Offline SDK surface (fast) ───────────────────────────────────
+  sdk:
+    name: SDK unit + typecheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install JS deps
+        run: npm ci
+
+      - name: Unit tests
+        run: npm run test:sdk
+
+      - name: Typecheck
+        run: npm run typecheck:sdk
+
+      - name: IDL address matches declare_id
+        run: |
+          python3 - <<'PY'
+          import json, re, pathlib
+          expected = "8i5E3R2to4R57TEPFs5DmxhDMAUUvWcXjFZup6MnCMEn"
+          idl = json.loads(pathlib.Path("client/idl/aeon.json").read_text())
+          assert idl["address"] == expected, idl["address"]
+          lib = pathlib.Path("programs/aeon/src/lib.rs").read_text()
+          m = re.search(r'declare_id!\("([^"]+)"\)', lib)
+          assert m and m.group(1) == expected, m.group(1) if m else None
+          print("IDL + declare_id OK:", expected)
+          PY
+
+  # ── SBF build ────────────────────────────────────────────────────
+  build-sbf:
+    name: Build SBF (.so)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache cargo / platform-tools
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ~/.cache/solana
+            ~/.local/share/solana
+          key: sbf-${{ runner.os }}-${{ env.SOLANA_VERSION }}-${{ hashFiles('programs/**/Cargo.toml', 'Cargo.lock') }}
+          restore-keys: |
+            sbf-${{ runner.os }}-${{ env.SOLANA_VERSION }}-
+
+      - name: Install Solana CLI
+        run: |
+          set -euo pipefail
+          sh -c "$(curl -sSfL https://release.anza.xyz/v${SOLANA_VERSION}/install)"
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> "$GITHUB_PATH"
+          solana --version
+          cargo-build-sbf --version
+
+      - name: Build program
+        run: npm run build:sbf
+
+      - name: Upload aeon.so
+        uses: actions/upload-artifact@v4
+        with:
+          name: aeon-so
+          path: target/deploy/aeon.so
+          if-no-files-found: error
+          retention-days: 7
+
+  # ── Positive e2e (localnet) ──────────────────────────────────────
+  e2e:
+    name: Positive e2e (localnet)
+    needs: build-sbf
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install JS deps
+        run: npm ci
+
+      - name: Cache cargo / solana
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ~/.cache/solana
+            ~/.local/share/solana
+          key: sbf-${{ runner.os }}-${{ env.SOLANA_VERSION }}-${{ hashFiles('programs/**/Cargo.toml', 'Cargo.lock') }}
+          restore-keys: |
+            sbf-${{ runner.os }}-${{ env.SOLANA_VERSION }}-
+
+      - name: Install Solana + Anchor
+        run: bash scripts/ci-install-toolchain.sh
+
+      - name: Download aeon.so
+        uses: actions/download-artifact@v4
+        with:
+          name: aeon-so
+          path: target/deploy
+
+      - name: Prepare keypair + deploy dir
+        run: bash scripts/ci-prepare-deploy.sh
+
+      - name: Generate payer wallet
+        run: |
+          mkdir -p ~/.config/solana
+          solana-keygen new -o ~/.config/solana/id.json --no-bip39-passphrase -f
+          solana config set --url localhost
+
+      - name: Run e2e
+        run: npm run test:e2e
+
+  # ── Negative + HEAVY catalog (localnet, multi-leg) ───────────────
+  negative:
+    name: Negative + HEAVY suite
+    needs: build-sbf
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install JS deps
+        run: npm ci
+
+      - name: Cache cargo / solana
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ~/.cache/solana
+            ~/.local/share/solana
+          key: sbf-${{ runner.os }}-${{ env.SOLANA_VERSION }}-${{ hashFiles('programs/**/Cargo.toml', 'Cargo.lock') }}
+          restore-keys: |
+            sbf-${{ runner.os }}-${{ env.SOLANA_VERSION }}-
+
+      - name: Install Solana + Anchor
+        run: bash scripts/ci-install-toolchain.sh
+
+      - name: Download aeon.so
+        uses: actions/download-artifact@v4
+        with:
+          name: aeon-so
+          path: target/deploy
+
+      - name: Prepare keypair + deploy dir
+        run: bash scripts/ci-prepare-deploy.sh
+
+      - name: Generate payer wallet
+        run: |
+          mkdir -p ~/.config/solana
+          solana-keygen new -o ~/.config/solana/id.json --no-bip39-passphrase -f
+          solana config set --url localhost
+
+      - name: Run negative catalog
+        run: npm run test:negative
