@@ -12,11 +12,13 @@
     "test:fuzz:p2": "bash scripts/run-trident-p2.sh",
     "typecheck:sdk": "tsc --noEmit -p tsconfig.client.json",
     "demo:economy": "bash scripts/run-demo.sh",
+    "demo:devnet": "node -r ts-node/register/transpile-only scripts/devnet-demo-escrow-org.ts",
     "deploy:devnet": "bash scripts/deploy-devnet.sh",
     "mine:devnet": "node scripts/pow-mine.mjs --target-sol 4",
     "build:sbf": "cargo-build-sbf --manifest-path programs/aeon/Cargo.toml",
     "smoke:devnet": "node -r ts-node/register/transpile-only scripts/devnet-smoke.ts",
-    "test:heavy-cpi": "bash scripts/run-heavy-cpi.sh"
+    "test:heavy-cpi": "bash scripts/run-heavy-cpi.sh",
+    "test:heavy-hook": "bash scripts/run-heavy-hook.sh"
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.30.1",

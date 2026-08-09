@@ -6,8 +6,9 @@ Full strategy: [NEGATIVE_E2E_STRATEGIES.md](./NEGATIVE_E2E_STRATEGIES.md)
 CPI spent review: [CPI_SPENT_INVARIANCE.md](./CPI_SPENT_INVARIANCE.md)  
 P2 Trident: [TRIDENT_P2.md](./TRIDENT_P2.md)
 
-**Runner:** `npm run test:negative` → **67 passing** (P0 45 + P1 classic 10 + P1 T22 4 + HEAVY CPI 8)  
-**Fuzz:** `npm run test:fuzz:p2` → **PASS** (200 iterations, 0 panics)
+**Runner:** `npm run test:negative` → **71 cases** (P0 45 + P1 classic 10 + P1 T22 4 + HEAVY freeze 8 + HEAVY hook 3 + soft 1)  
+**Fuzz:** `npm run test:fuzz:p2` → **PASS** (200 iterations, 0 panics)  
+**Devnet:** `npm run demo:devnet` → **PASS** (escrow → org → dissolve)
 
 ---
 
@@ -25,7 +26,7 @@ P2 Trident: [TRIDENT_P2.md](./TRIDENT_P2.md)
 | NEG-AUTH-008 | P0 | ParentIdMismatch | **PASS** |
 | NEG-AUTH-009 | P1 | InvalidCategoryCount (>8) | **PASS** |
 | NEG-AUTH-010 | P1 | unregistered agent issue fails | **PASS** |
-| NEG-AUTH-011 | P2 | soft dual-child overissue | TODO |
+| NEG-AUTH-011 | P2 | soft dual-child overissue (both children budget=parent.remaining) | **ACCEPTED** |
 
 ## PAY
 
@@ -65,7 +66,7 @@ P2 Trident: [TRIDENT_P2.md](./TRIDENT_P2.md)
 | NEG-T22-012 | P1 | classic program vs T22 mint fails | **PASS** |
 | NEG-T22-013 | P1 | CategoryNotAllowed on T22 | **PASS** |
 
-## HEAVY CPI-fail spent invariance
+## HEAVY CPI-fail spent invariance (freeze)
 
 | ID | Pri | Expect | Status |
 |----|-----|--------|--------|
@@ -77,6 +78,17 @@ P2 Trident: [TRIDENT_P2.md](./TRIDENT_P2.md)
 | NEG-CPI-021 | HEAVY | atomic_split leg-A freeze; spent unchanged | **PASS** |
 | NEG-CPI-090 | HEAVY | control pay increments spent once | **PASS** |
 | NEG-CPI-091 | HEAVY | freeze/thaw then pay ok | **PASS** |
+
+## HEAVY CPI transfer-hook reject (Token-2022)
+
+| ID | Pri | Expect | Status |
+|----|-----|--------|--------|
+| NEG-CPI-030 | HEAVY | T22 TransferHook mint → pay CPI fail; spent/ATAs/CRI unchanged | **PASS** |
+| NEG-CPI-031 | HEAVY | same → create_escrow fail; spent + escrow_counter unchanged | **PASS** |
+| NEG-CPI-032 | HEAVY | same → atomic_split fail; full rollback; spent unchanged | **PASS** |
+
+Harness: `tests/negative/heavy-cpi-transfer-hook.negative.ts` · `npm run test:heavy-hook`  
+Approach A: mint has TransferHook extension; AEON does not forward remaining_accounts → Token-2022 rejects transfer after policy checks.
 
 ## P2 Trident fuzz (generative)
 
@@ -94,14 +106,17 @@ Harness: `trident-tests/remaining_accounts_p2` · docs: [TRIDENT_P2.md](./TRIDEN
 
 | Status | Count |
 |--------|-------|
-| **PASS** (negative e2e) | **67** |
+| **PASS** (negative e2e) | **70** |
+| **ACCEPTED** (soft-model) | **1** (NEG-AUTH-011) |
 | **PASS** (P2 fuzz targets) | **5** |
 | SKIP | 2 |
-| TODO P2 (soft-model) | 1 (NEG-AUTH-011) |
+| TODO P2 | **0** |
 
 ## Implementation notes
 
 1. **Slot-warp:** `waitPastSlot` polls `getSlot('confirmed')` on solana-test-validator.
 2. **Token-2022:** isolated validator leg with protocol mint as T22.
-3. **CPI spent:** freeze-authority mint; real SPL freeze fails `transfer_checked` after AEON policy checks. See [CPI_SPENT_INVARIANCE.md](./CPI_SPENT_INVARIANCE.md).
-4. **Trident:** run from `trident-tests/` (`npm run test:fuzz:p2`). Single-signer SVM limits multi-agent pay success paths.
+3. **CPI spent (freeze):** freeze-authority mint; real SPL freeze fails `transfer_checked` after AEON policy checks. See [CPI_SPENT_INVARIANCE.md](./CPI_SPENT_INVARIANCE.md).
+4. **CPI spent (hook):** TransferHook mint + no remaining_accounts on AEON CPI. Same fail-closed oracle.
+5. **Soft dual-child overissue:** `issue_authority` does not reserve `parent.spent`; documented v0.1 product model (`tests/negative/p2-soft.negative.ts`).
+6. **Trident:** run from `trident-tests/` (`npm run test:fuzz:p2`). Single-signer SVM limits multi-agent pay success paths.

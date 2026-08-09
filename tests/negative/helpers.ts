@@ -9,6 +9,8 @@ import {
   SystemProgram,
   SYSVAR_RENT_PUBKEY,
   LAMPORTS_PER_SOL,
+  Transaction,
+  sendAndConfirmTransaction,
 } from "@solana/web3.js";
 import {
   TOKEN_PROGRAM_ID,
@@ -20,6 +22,10 @@ import {
   createAccount,
   freezeAccount,
   thawAccount,
+  ExtensionType,
+  getMintLen,
+  createInitializeMintInstruction,
+  createInitializeTransferHookInstruction,
 } from "@solana/spl-token";
 import { expect } from "chai";
 import {
@@ -33,6 +39,15 @@ import {
 export const ONE = 1_000_000;
 export const DECIMALS = 6;
 
+/**
+ * Dummy transfer-hook program id — not deployed.
+ * Deterministic seed so logs are stable; AEON omits remaining_accounts so
+ * Token-2022 transfer_checked fails (true CPI-fail path).
+ */
+export const DUMMY_TRANSFER_HOOK_PROGRAM = Keypair.fromSeed(
+  Uint8Array.from(Buffer.alloc(32, 0xae))
+).publicKey;
+
 export type AeonProgram = Program;
 
 export interface Fixture {
@@ -45,6 +60,8 @@ export interface Fixture {
   tokenProgram: PublicKey;
   /** Set when mint was created with freeze authority (admin). */
   freezeAuthority: PublicKey | null;
+  /** Set when mint has TransferHook extension. */
+  transferHookProgramId: PublicKey | null;
   agentA: Keypair;
   agentB: Keypair;
   agentC: Keypair;
@@ -136,11 +153,63 @@ export async function waitPastSlot(
   );
 }
 
+/**
+ * Create a Token-2022 mint with TransferHook extension.
+ * AEON's plain transfer_checked CPI does not forward remaining_accounts,
+ * so transfers against this mint fail inside Token-2022 (true CPI-fail path).
+ */
+export async function createMintWithTransferHook(
+  connection: anchor.web3.Connection,
+  payer: Keypair,
+  mintAuthority: PublicKey,
+  transferHookProgramId: PublicKey = DUMMY_TRANSFER_HOOK_PROGRAM,
+  decimals: number = DECIMALS
+): Promise<PublicKey> {
+  const mintKeypair = Keypair.generate();
+  const mintLen = getMintLen([ExtensionType.TransferHook]);
+  const lamports = await connection.getMinimumBalanceForRentExemption(mintLen);
+
+  const tx = new Transaction().add(
+    SystemProgram.createAccount({
+      fromPubkey: payer.publicKey,
+      newAccountPubkey: mintKeypair.publicKey,
+      space: mintLen,
+      lamports,
+      programId: TOKEN_2022_PROGRAM_ID,
+    }),
+    createInitializeTransferHookInstruction(
+      mintKeypair.publicKey,
+      mintAuthority,
+      transferHookProgramId,
+      TOKEN_2022_PROGRAM_ID
+    ),
+    createInitializeMintInstruction(
+      mintKeypair.publicKey,
+      decimals,
+      mintAuthority,
+      null,
+      TOKEN_2022_PROGRAM_ID
+    )
+  );
+
+  await sendAndConfirmTransaction(connection, tx, [payer, mintKeypair], {
+    commitment: "confirmed",
+  });
+  return mintKeypair.publicKey;
+}
+
 export interface BootstrapOpts {
   token2022?: boolean;
   force?: boolean;
   /** When true, mint freeze authority = admin (for CPI-fail freeze tests). */
   withFreeze?: boolean;
+  /**
+   * When true, protocol mint is Token-2022 with TransferHook extension.
+   * Implies token2022. Isolated leg only — cannot share fixture with classic mint.
+   */
+  withTransferHook?: boolean;
+  /** Override dummy hook program id (default non-executable deterministic key). */
+  transferHookProgramId?: PublicKey;
 }
 
 let _fixture: Fixture | null = null;
@@ -156,9 +225,9 @@ export async function bootstrapFixture(
   const connection = provider.connection;
   const admin = provider.wallet as anchor.Wallet;
 
-  const tokenProgram = opts.token2022
-    ? TOKEN_2022_PROGRAM_ID
-    : TOKEN_PROGRAM_ID;
+  const useHook = !!opts.withTransferHook;
+  const tokenProgram =
+    opts.token2022 || useHook ? TOKEN_2022_PROGRAM_ID : TOKEN_PROGRAM_ID;
 
   const aeon = AeonClient.fromWorkspace(program, provider, tokenProgram);
 
@@ -168,17 +237,34 @@ export async function bootstrapFixture(
   await airdrop(connection, agentB.publicKey);
   await airdrop(connection, agentC.publicKey);
 
-  const freezeAuthority = opts.withFreeze ? admin.publicKey : null;
-  const mint = await createMint(
-    connection,
-    admin.payer,
-    admin.publicKey,
-    freezeAuthority,
-    DECIMALS,
-    undefined,
-    undefined,
-    tokenProgram
-  );
+  let mint: PublicKey;
+  let freezeAuthority: PublicKey | null = null;
+  let transferHookProgramId: PublicKey | null = null;
+
+  if (useHook) {
+    transferHookProgramId =
+      opts.transferHookProgramId ?? DUMMY_TRANSFER_HOOK_PROGRAM;
+    mint = await createMintWithTransferHook(
+      connection,
+      admin.payer,
+      admin.publicKey,
+      transferHookProgramId,
+      DECIMALS
+    );
+  } else {
+    freezeAuthority = opts.withFreeze ? admin.publicKey : null;
+    mint = await createMint(
+      connection,
+      admin.payer,
+      admin.publicKey,
+      freezeAuthority,
+      DECIMALS,
+      undefined,
+      undefined,
+      tokenProgram
+    );
+  }
+
   await aeon.initializeConfig(mint);
 
   const ataA = await createAssociatedTokenAccountIdempotent(
@@ -206,6 +292,7 @@ export async function bootstrapFixture(
     tokenProgram
   );
 
+  // mintTo does not invoke transfer hooks — funding still works.
   await mintTo(
     connection,
     admin.payer,
@@ -242,6 +329,7 @@ export async function bootstrapFixture(
     mint,
     tokenProgram,
     freezeAuthority,
+    transferHookProgramId,
     agentA,
     agentB,
     agentC,
@@ -344,4 +432,5 @@ export {
   mintTo,
   freezeAccount,
   thawAccount,
+  ExtensionType,
 };

@@ -67,5 +67,7 @@ Pay success path is intentionally limited: Trident SVM single-payer signing cann
 ## Limitations / follow-ups
 
 - Single SVM signer → no multi-agent pay success in this harness.
-- Soft dual-child over-issue (`NEG-AUTH-011`) remains a documented soft-model case, not a hard reject.
-- Optional next: expand types to atomic_split remaining_accounts; Token-2022 transfer-hook reject path (HEAVY).
+- Soft dual-child over-issue is **NEG-AUTH-011 ACCEPTED** (`tests/negative/p2-soft.negative.ts`) — documented soft model, not a hard reject.
+- Transfer-hook reject path is closed as **NEG-CPI-030..032** (HEAVY, Approach A).
+- Optional next: expand types to atomic_split remaining_accounts; multi-signer pay in Trident.
+

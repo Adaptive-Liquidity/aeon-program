@@ -250,14 +250,15 @@ Long scripts that combine legal steps then one illegal:
 
 ### S10 — Token-2022 & extension hostility
 
-| Case | Expected |
-|------|----------|
-| Transfer-hook mint that rejects | CPI fail; spent **not** committed (validate→transfer→commit) |
-| Freeze authority freezes payer ATA | fail closed |
-| Wrong token program id with classic mint | fail |
-| Correct Token-2022 program + mint | success path (positive) |
+| Case | Expected | Status |
+|------|----------|--------|
+| Transfer-hook mint that rejects | CPI fail; spent **not** committed (validate→transfer→commit) | **DONE** NEG-CPI-030..032 |
+| Freeze authority freezes payer ATA | fail closed | **DONE** NEG-CPI-001..091 |
+| Wrong token program id with classic mint | fail | **DONE** NEG-T22-001 / NEG-CPI-003 |
+| Correct Token-2022 program + mint | success path (positive) | **DONE** NEG-T22-010/011 |
 
-Critical: **spent-before-transfer regression** — force CPI failure after would-be spent update; assert spent unchanged.
+Critical: **spent-before-transfer regression** — force CPI failure after would-be spent update; assert spent unchanged. See [CPI_SPENT_INVARIANCE.md](./CPI_SPENT_INVARIANCE.md).
+
 
 ---
 
@@ -274,8 +275,9 @@ Score = **Economic risk (1–5) × Reachability (1–5) × Untested (1–5)**
 | 5 | Account substitution / mint | InvalidMint, Unauthorized ATA, wrong PDA | 70–90 | **P1** |
 | 6 | Temporal | AuthorityExpired, timeout conditions | 60–80 | **P1** |
 | 7 | Cascade revoke | InvalidCascadeChild, AccountDidNotSerialize regressions | 50–70 | **P1** |
-| 8 | Soft-model documentation tests | soft over-issue, residual dissolve | 40–60 | **P2** |
+| 8 | Soft-model documentation tests | soft over-issue, residual dissolve | 40–60 | **P2 — DONE** (NEG-AUTH-011 ACCEPTED) |
 | 9 | Fuzz / Trident | generative | continuous | **P2 — DONE** ([TRIDENT_P2.md](./TRIDENT_P2.md)) |
+
 
 
 ---
@@ -472,8 +474,10 @@ Fresh validator per suite avoids config PDA collisions with happy e2e.
 | 5 | **HEAVY** | Review spent-before-transfer under forced CPI fail | security closeout |
 | 6 | **BUILD** | P1 temporal + substitution + Token-2022 hostility | depth |
 | 7 | **BUILD** | Trident fuzz skeleton for pay/issue | **DONE** — `trident-tests/remaining_accounts_p2` ([TRIDENT_P2.md](./TRIDENT_P2.md)) |
-| 8 | **BUILD** | Extended devnet demo (escrow → org → dissolve) | product surface |
-| 9 | **HEAVY** | Transfer-hook reject path (Token-2022) | CPI hostility |
+| 8 | **BUILD** | Extended devnet demo (escrow → org → dissolve) | **DONE** — `npm run demo:devnet` |
+| 9 | **HEAVY** | Transfer-hook reject path (Token-2022) | **DONE** — NEG-CPI-030..032 |
+| 10 | **BUILD** | Soft dual-child overissue docs test | **DONE** — NEG-AUTH-011 ACCEPTED |
+
 
 
 ---

@@ -1,105 +1,89 @@
-# HEAVY: CPI-fail spent invariance
+# CPI Spent Invariance — HEAVY Closeout
 
-**Status:** Reviewed + tested (2026-08-09)  
-**Invariant:** `authority.spent` (and CRI volume / commitments) increase **if and only if** the token transfer CPI(s) succeed.
-
----
-
-## 1. Threat model
-
-| Concern | Real on Solana? | Notes |
-|---------|-----------------|--------|
-| Write `spent` then CPI fails, spent sticks | **No** (runtime) | Whole tx atomic — failed ix rolls back all account writes |
-| Write `spent` then CPI fails, confusing simulation/logs | Yes (ops) | Developers may misread partial sim; post-transfer commit is clearer |
-| Multi-leg: transfer A ok, transfer B fails, spent still applied | **No** if spent after both; **Yes** if spent between legs | AEON commits spent **after** all legs |
-| Pre-check only (empty ATA) mistaken for CPI-fail test | Test gap | Pre-checks return `InsufficientBudget` *before* CPI |
-
-Defense in depth: **validate → transfer CPI(s) → commit spent / CRI**.
+**Status:** **CLOSED** (freeze suite + transfer-hook suite)  
+**Date:** 2026-08-09  
+**Program:** AEON (`8i5E3R2to4R57TEPFs5DmxhDMAUUvWcXjFZup6MnCMEn`)
 
 ---
 
-## 2. Code map (post-CPI commit)
+## 1. Question
 
-| Instruction | File | Order |
-|-------------|------|--------|
-| `pay` | `instructions/pay.rs` | policy + balance checks → `transfer_checked` → `authority.spent` + CRI |
-| `create_escrow` | `instructions/create_escrow.rs` | same → transfer to vault → spent → escrow fields |
-| `atomic_split` | `instructions/atomic_split.rs` | policy → CPI A → optional CPI B → **then** spent + CRI |
+If token CPI fails *after* AEON policy validation, does `authority.spent` (or related counters) still move?
 
-Pattern (all three):
-
-```text
-commit_spent = Some(new_spent)   // not written yet
-transfer_checked(...)?;          // may fail
-authority.spent = new_spent;     // only on success path
-```
-
-`commit_spent` is a local `Option` — never persisted until after `?` on CPI.
+**Doctrine:** validate → CPI → commit spent. Fail closed.
 
 ---
 
-## 3. Solana atomicity (why runtime is safe even if order flipped)
+## 2. Order review (source)
 
-A single instruction that mutates `authority` then CPIs into Token Program:
-
-1. If CPI returns `Err`, the **instruction** fails.
-2. The runtime discards **all** account modifications from that transaction.
-3. Therefore pre-CPI `spent` writes would also roll back.
-
-Post-CPI commit remains required for:
-
-- Readable fail-closed design review
-- Correct multi-leg ordering (`atomic_split`)
-- Avoiding “spent increased” in logs for failed sims that only show partial account meta
+| Instruction | Order | Result |
+|-------------|-------|--------|
+| `pay` | policy → `transfer_checked` → write spent | **correct** |
+| `create_escrow` | policy → transfer to vault → spent + counter | **correct** |
+| `atomic_split` | both legs CPI → then spent/CRI | **correct** |
 
 ---
 
-## 4. How tests force a *real* CPI failure
+## 3. Forced CPI-fail mechanisms
 
-Pre-validation does **not** check freeze state. SPL `transfer_checked` does.
+### A. Freeze (classic mint)
 
-| Case ID | Force | Assert |
-|---------|-------|--------|
-| NEG-CPI-001 | Freeze **payee** ATA | pay fails; spent/ATAs/CRI unchanged |
-| NEG-CPI-002 | Freeze **payer** ATA | pay fails; spent unchanged |
-| NEG-CPI-003 | Wrong `token_program` (Token-2022 on classic mint) | fail; spent unchanged |
-| NEG-CPI-010 | Freeze payer on `create_escrow` | fail; spent + `escrow_counter` unchanged |
-| NEG-CPI-020 | Freeze payee **B** on 2-leg `atomic_split` | fail; **neither** leg balances change; spent unchanged |
-| NEG-CPI-021 | Freeze payee **A** | fail; spent unchanged |
-| NEG-CPI-090/091 | Control success after thaw | spent += amount exactly |
+Mint freeze authority = admin. Freeze source/dest ATA.  
+Pre-validation does **not** check freeze; Token Program rejects inside CPI.
 
-Bootstrap: `bootstrapFixture({ force: true, withFreeze: true })` — mint freeze authority = admin.
+**Suite:** `tests/negative/heavy-cpi-spent.negative.ts`  
+**Runner:** `npm run test:heavy-cpi` (also leg 3 of `npm run test:negative`)
+
+| ID | Result |
+|----|--------|
+| NEG-CPI-001..003, 010, 020, 021, 090, 091 | **8/8 PASS** |
+
+### B. TransferHook mint (Token-2022)
+
+Protocol mint is Token-2022 with `TransferHook` extension pointing at a non-deployed program id.  
+AEON CPI uses plain `transfer_checked` (no remaining_accounts) → Token-2022 rejects transfer after AEON policy checks.
+
+**Suite:** `tests/negative/heavy-cpi-transfer-hook.negative.ts`  
+**Runner:** `npm run test:heavy-hook` (also leg 4 of `npm run test:negative`)  
+**Helper:** `createMintWithTransferHook` in `tests/negative/helpers.ts`
+
+| ID | Setup | Assert |
+|----|--------|--------|
+| NEG-CPI-030 | pay | CPI fail; spent/ATAs/CRI unchanged |
+| NEG-CPI-031 | create_escrow | spent + `escrow_counter` unchanged |
+| NEG-CPI-032 | atomic_split 2-leg | full rollback; spent unchanged |
+
+**3/3 PASS**
+
+This is **Approach A** (no AEON program change). Full hook Execute support would need remaining_accounts forwarding (Approach B — product stretch).
 
 ---
 
-## 5. Review verdict
+## 4. Oracle (shared)
 
-| Check | Verdict |
-|-------|---------|
-| `pay` spent after CPI | **PASS** |
-| `create_escrow` spent after CPI | **PASS** |
-| `atomic_split` spent after **all** legs | **PASS** |
-| CRI only on success path | **PASS** |
-| No intermediate spent between split legs | **PASS** |
-| Forced CPI-fail e2e | **PASS** (`tests/negative/heavy-cpi-spent.negative.ts`) |
+For every forced fail:
 
-**No program code change required** for this closeout — order was already correct. Tests + this memo close the HEAVY item.
+- `authority.spent` unchanged  
+- ATA balances unchanged  
+- CRI commitments + volume unchanged  
+- On failed create_escrow: `escrow_counter` unchanged  
 
 ---
 
-## 6. Residual / out of scope
+## 5. Residual / out of scope
 
-- Token-2022 **transfer hooks** that reject mid-CPI (similar class; freeze is sufficient proxy)
-- Cross-program re-entrancy (Token Program is not re-entering AEON)
+- Approach B: deploy always-reject hook + AEON forwards remaining_accounts so Execute runs  
+- Cross-program re-entrancy (Token Program is not re-entering AEON)  
 - Client SDK retries double-spend (wallet/user layer)
 
 ---
 
-## 7. Run
+## 6. Run
 
 ```bash
-# isolated leg (own validator + freeze mint)
-# wired into npm run test:negative as leg 3, or:
-# Anchor.toml test glob → tests/negative/heavy-cpi-spent.negative.ts
-npm run test:negative
+npm run test:heavy-cpi    # freeze leg only
+npm run test:heavy-hook   # transfer-hook leg only
+npm run test:negative     # all legs including both HEAVY suites
 ```
+
+**No program code change required** for this closeout — order was already correct. Tests close the HEAVY items.

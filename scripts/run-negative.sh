@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Fresh localnet legs:
-#   1) P0 + P1 classic (shared fixture)
+#   1) P0 + P1 classic + P2 soft-model (shared fixture)
 #   2) P1 Token-2022 protocol-mint isolation
 #   3) HEAVY CPI-fail spent invariance (freeze-authority mint)
+#   4) HEAVY CPI transfer-hook reject (T22 TransferHook mint)
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -36,13 +37,16 @@ PY
   anchor test --skip-build
 }
 
-run_leg "P0+P1 classic" \
-  "tests/negative/p0.negative.ts tests/negative/p1.negative.ts"
+run_leg "P0+P1 classic + P2 soft" \
+  "tests/negative/p0.negative.ts tests/negative/p1.negative.ts tests/negative/p2-soft.negative.ts"
 
 run_leg "P1 Token-2022" \
   "tests/negative/p1-token2022.negative.ts"
 
 run_leg "HEAVY CPI-spent" \
   "tests/negative/heavy-cpi-spent.negative.ts"
+
+run_leg "HEAVY CPI transfer-hook" \
+  "tests/negative/heavy-cpi-transfer-hook.negative.ts"
 
 echo "✓ all negative legs green"
