@@ -1,0 +1,8 @@
+[fuzz.metrics]
+enabled = true
+
+
+[[fuzz.programs]]
+address = "8i5E3R2to4R57TEPFs5DmxhDMAUUvWcXjFZup6MnCMEn"
+program = "../target/deploy/aeon.so"
+ 

@@ -12,3 +12,8 @@ coverage/
 *.log
 .idea/
 .vscode/
+
+# Trident fuzz artifacts
+fuzzing_*.json
+fuzzing_*.html
+trident_logs_*.log

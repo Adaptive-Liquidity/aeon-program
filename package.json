@@ -9,6 +9,7 @@
     "test:e2e": "anchor test --skip-build -- --grep 'aeon e2e'",
     "test:sdk": "ts-mocha -p ./tsconfig.json -t 10000 'client/__tests__/**/*.ts'",
     "test:negative": "bash scripts/run-negative.sh",
+    "test:fuzz:p2": "bash scripts/run-trident-p2.sh",
     "typecheck:sdk": "tsc --noEmit -p tsconfig.client.json",
     "demo:economy": "bash scripts/run-demo.sh",
     "deploy:devnet": "bash scripts/deploy-devnet.sh",

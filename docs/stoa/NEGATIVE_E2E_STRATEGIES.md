@@ -275,7 +275,8 @@ Score = **Economic risk (1–5) × Reachability (1–5) × Untested (1–5)**
 | 6 | Temporal | AuthorityExpired, timeout conditions | 60–80 | **P1** |
 | 7 | Cascade revoke | InvalidCascadeChild, AccountDidNotSerialize regressions | 50–70 | **P1** |
 | 8 | Soft-model documentation tests | soft over-issue, residual dissolve | 40–60 | **P2** |
-| 9 | Fuzz / Trident | generative | continuous | **P2** |
+| 9 | Fuzz / Trident | generative | continuous | **P2 — DONE** ([TRIDENT_P2.md](./TRIDENT_P2.md)) |
+
 
 ---
 
@@ -386,7 +387,8 @@ aeon-program/
 │   ├── NEGATIVE_E2E_STRATEGIES.md # this file
 │   ├── CASE_CATALOG.md            # living checklist (IDs + status)
 │   └── COVERAGE.md                # code × test matrix (generated later)
-└── fuzz/                          # optional Trident workspace (P2)
+└── trident-tests/                 # Trident 0.12 workspace (P2 — remaining_accounts_p2)
+
 ```
 
 ### 6.2 Helper contract (`helpers.ts`)
@@ -469,7 +471,10 @@ Fresh validator per suite avoids config PDA collisions with happy e2e.
 | 4 | **BUILD** | `npm run test:negative` isolation script | CI entrypoint |
 | 5 | **HEAVY** | Review spent-before-transfer under forced CPI fail | security closeout |
 | 6 | **BUILD** | P1 temporal + substitution + Token-2022 hostility | depth |
-| 7 | **BUILD** | Trident fuzz skeleton for pay/issue | generative |
+| 7 | **BUILD** | Trident fuzz skeleton for pay/issue | **DONE** — `trident-tests/remaining_accounts_p2` ([TRIDENT_P2.md](./TRIDENT_P2.md)) |
+| 8 | **BUILD** | Extended devnet demo (escrow → org → dissolve) | product surface |
+| 9 | **HEAVY** | Transfer-hook reject path (Token-2022) | CPI hostility |
+
 
 ---
 

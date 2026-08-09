@@ -3,9 +3,11 @@
 Living checklist. Status: `TODO` | `IMPL` | `PASS` | `SKIP` | `ACCEPTED`.
 
 Full strategy: [NEGATIVE_E2E_STRATEGIES.md](./NEGATIVE_E2E_STRATEGIES.md)  
-CPI spent review: [CPI_SPENT_INVARIANCE.md](./CPI_SPENT_INVARIANCE.md)
+CPI spent review: [CPI_SPENT_INVARIANCE.md](./CPI_SPENT_INVARIANCE.md)  
+P2 Trident: [TRIDENT_P2.md](./TRIDENT_P2.md)
 
-**Runner:** `npm run test:negative` → **67 passing** (P0 45 + P1 classic 10 + P1 T22 4 + HEAVY CPI 8)
+**Runner:** `npm run test:negative` → **67 passing** (P0 45 + P1 classic 10 + P1 T22 4 + HEAVY CPI 8)  
+**Fuzz:** `npm run test:fuzz:p2` → **PASS** (200 iterations, 0 panics)
 
 ---
 
@@ -76,16 +78,30 @@ CPI spent review: [CPI_SPENT_INVARIANCE.md](./CPI_SPENT_INVARIANCE.md)
 | NEG-CPI-090 | HEAVY | control pay increments spent once | **PASS** |
 | NEG-CPI-091 | HEAVY | freeze/thaw then pay ok | **PASS** |
 
+## P2 Trident fuzz (generative)
+
+| ID | Pri | Expect | Status |
+|----|-----|--------|--------|
+| FUZZ-REV-001 | P2 | revoke + remaining_accounts cascade (valid + adversarial metas) | **PASS** |
+| FUZZ-REV-002 | P2 | revoke adversarial/missing authority ids + garbage remaining | **PASS** |
+| FUZZ-AUTH-001 | P2 | issue child hierarchy / parent_id + budget edges | **PASS** |
+| FUZZ-PAY-001 | P2 | pay budget edges; fail-closed spent on error | **PASS** |
+| FUZZ-INV-001 | P2 | end-of-iteration spent≤budget, depth≤3, status≤3 | **PASS** |
+
+Harness: `trident-tests/remaining_accounts_p2` · docs: [TRIDENT_P2.md](./TRIDENT_P2.md)
+
 ## Counts
 
 | Status | Count |
 |--------|-------|
-| **PASS** | **67** |
+| **PASS** (negative e2e) | **67** |
+| **PASS** (P2 fuzz targets) | **5** |
 | SKIP | 2 |
-| TODO P2 | ~3 |
+| TODO P2 (soft-model) | 1 (NEG-AUTH-011) |
 
 ## Implementation notes
 
 1. **Slot-warp:** `waitPastSlot` polls `getSlot('confirmed')` on solana-test-validator.
 2. **Token-2022:** isolated validator leg with protocol mint as T22.
 3. **CPI spent:** freeze-authority mint; real SPL freeze fails `transfer_checked` after AEON policy checks. See [CPI_SPENT_INVARIANCE.md](./CPI_SPENT_INVARIANCE.md).
+4. **Trident:** run from `trident-tests/` (`npm run test:fuzz:p2`). Single-signer SVM limits multi-agent pay success paths.
