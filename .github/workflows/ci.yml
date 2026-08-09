@@ -6,6 +6,8 @@
 #   - Prefer cargo-build-sbf + committed IDL (full `anchor build` IDL regen
 #     is broken on rustc ≥1.97 / anchor-syn 0.30.1).
 #   - Program keypair: keys/aeon-keypair.json (must match declare_id!).
+#   - Solana install: always `export PATH=...` in the *same* step as install.
+#     GITHUB_PATH only applies to subsequent steps.
 
 name: CI
 
@@ -91,7 +93,9 @@ jobs:
         run: |
           set -euo pipefail
           sh -c "$(curl -sSfL https://release.anza.xyz/v${SOLANA_VERSION}/install)"
-          echo "$HOME/.local/share/solana/install/active_release/bin" >> "$GITHUB_PATH"
+          # GITHUB_PATH only affects *next* steps; export for this shell too
+          export PATH="${HOME}/.local/share/solana/install/active_release/bin:${PATH}"
+          echo "${HOME}/.local/share/solana/install/active_release/bin" >> "$GITHUB_PATH"
           solana --version
           cargo-build-sbf --version
 

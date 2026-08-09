@@ -12,7 +12,7 @@ GitHub Actions workflows for the product surface.
 | Job | Commands | Needs validator? |
 |-----|----------|------------------|
 | **sdk** | `npm run test:sdk` · `npm run typecheck:sdk` · IDL/`declare_id!` assert | No |
-| **build-sbf** | `npm run build:sbf` → upload `aeon.so` | No |
+| **build-sbf** | install Solana · `npm run build:sbf` → upload `aeon.so` | No |
 | **e2e** | prepare deploy · `npm run test:e2e` | Yes (anchor test) |
 | **negative** | prepare deploy · `npm run test:negative` (4 legs) | Yes (multi-restart) |
 
@@ -32,6 +32,15 @@ GitHub Actions workflows for the product surface.
 | TypeScript | ^5.4 (see package.json) |
 
 Install helper: [`scripts/ci-install-toolchain.sh`](../scripts/ci-install-toolchain.sh)
+
+### Solana PATH gotcha (CI)
+
+Anza’s installer only appends to `~/.profile`. In GitHub Actions:
+
+1. **Same step as install:** `export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"` before `solana` / `cargo-build-sbf`.
+2. **Next steps:** also `echo …/bin >> $GITHUB_PATH`.
+
+`GITHUB_PATH` alone does **not** affect the current shell — that caused the first `v0.1.0` CI failure (`solana: command not found` right after install).
 
 ## Deploy artifacts
 

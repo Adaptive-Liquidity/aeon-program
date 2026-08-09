@@ -3,12 +3,13 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>AEON Solana Program</title>
+<title>AEON — Agent Economic Control Plane</title>
+<meta name="description" content="AEON v0.1.0 product surface: 16 on-chain instructions, TypeScript Agent SDK, fail-closed spend, live on Solana devnet."/>
 <style>
-:root{--bg:#0b1220;--panel:#121a2b;--border:#1e2a44;--text:#e8eefc;--muted:#8b9bb8;--ok:#22c55e;--stub:#f59e0b;--accent:#38bdf8}
+:root{--bg:#0b1220;--panel:#121a2b;--border:#1e2a44;--text:#e8eefc;--muted:#8b9bb8;--ok:#22c55e;--soft:#38bdf8;--accent:#38bdf8;--warn:#f59e0b}
 *{box-sizing:border-box}body{margin:0;font-family:ui-sans-serif,system-ui,sans-serif;background:radial-gradient(1000px 500px at 10% -10%,#1a2744,var(--bg));color:var(--text);min-height:100vh}
-header{padding:28px 24px;border-bottom:1px solid var(--border);background:rgba(10,16,28,.75);backdrop-filter:blur(8px);position:sticky;top:0}
-h1{margin:0 0 6px;font-size:1.4rem} .sub{color:var(--muted);font-size:.9rem}
+header{padding:28px 24px;border-bottom:1px solid var(--border);background:rgba(10,16,28,.75);backdrop-filter:blur(8px);position:sticky;top:0;z-index:1}
+h1{margin:0 0 6px;font-size:1.4rem} .sub{color:var(--muted);font-size:.9rem;line-height:1.45}
 main{max-width:960px;margin:0 auto;padding:24px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:16px 0 28px}
 .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px}
@@ -17,71 +18,149 @@ main{max-width:960px;margin:0 auto;padding:24px}
 table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:24px}
 th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--border);font-size:.88rem}
 th{color:var(--muted);background:#0e1628}
+tr:last-child td{border-bottom:none}
 .badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.72rem;font-weight:700}
 .badge.ok{background:rgba(34,197,94,.15);color:var(--ok)}
-.badge.stub{background:rgba(245,158,11,.15);color:var(--stub)}
+.badge.soft{background:rgba(56,189,248,.15);color:var(--soft)}
+.badge.warn{background:rgba(245,158,11,.15);color:var(--warn)}
 code{font-family:ui-monospace,Menlo,monospace;font-size:.8rem;color:var(--accent)}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
 h2{font-size:1.05rem;margin:28px 0 12px}
 pre{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px;overflow:auto;font-size:.78rem;line-height:1.45}
+.note{color:var(--muted);font-size:.85rem;margin:8px 0 20px;line-height:1.5}
+.links{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0 24px}
+.links a{background:var(--panel);border:1px solid var(--border);border-radius:999px;padding:6px 12px;font-size:.82rem}
+footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--border);color:var(--muted);font-size:.8rem}
 </style>
 </head>
 <body>
 <header>
-  <h1>AEON Solana Program</h1>
-  <div class="sub">Anchor 0.30.1 scaffold · cargo check passed · ready for Heavy security review</div>
+  <h1>AEON</h1>
+  <div class="sub">
+    Agent economic control plane on Solana · <strong>v0.1.0 product surface</strong><br/>
+    Anchor 0.30.1 · 16 instructions · TypeScript Agent SDK · fail-closed spend · live on devnet<br/>
+    <em>Not a yield / APY / emissions product.</em>
+  </div>
 </header>
 <main>
   <div class="grid">
-    <div class="card"><div class="l">Instructions</div><div class="v">13</div></div>
-    <div class="card"><div class="l">Implemented</div><div class="v" style="color:var(--ok)">3</div></div>
-    <div class="card"><div class="l">Stubs</div><div class="v" style="color:var(--stub)">10</div></div>
-    <div class="card"><div class="l">Accounts</div><div class="v">9</div></div>
+    <div class="card"><div class="l">Instructions</div><div class="v" style="color:var(--ok)">16</div></div>
+    <div class="card"><div class="l">Implemented</div><div class="v" style="color:var(--ok)">16</div></div>
+    <div class="card"><div class="l">Negatives</div><div class="v" style="color:var(--ok)">70 PASS</div></div>
+    <div class="card"><div class="l">HEAVY CPI</div><div class="v" style="color:var(--ok)">8/8 · 3/3</div></div>
   </div>
 
-  <h2>Instruction status</h2>
+  <div class="links">
+    <a href="https://github.com/Adaptive-Liquidity/aeon-program">GitHub</a>
+    <a href="https://github.com/Adaptive-Liquidity/aeon-program/blob/main/docs/OVERVIEW.md">Overview</a>
+    <a href="https://github.com/Adaptive-Liquidity/aeon-program/blob/main/docs/QUICKSTART.md">Quickstart</a>
+    <a href="https://github.com/Adaptive-Liquidity/aeon-program/blob/main/docs/SECURITY_MODEL.md">Security model</a>
+    <a href="https://github.com/Adaptive-Liquidity/aeon-program/blob/main/docs/DEVNET.md">Devnet</a>
+    <a href="https://explorer.solana.com/address/8i5E3R2to4R57TEPFs5DmxhDMAUUvWcXjFZup6MnCMEn?cluster=devnet">Explorer</a>
+  </div>
+
+  <h2>Coordinates</h2>
   <table>
-    <thead><tr><th>Instruction</th><th>Status</th><th>Notes</th></tr></thead>
+    <thead><tr><th>Field</th><th>Value</th></tr></thead>
     <tbody>
-      <tr><td><code>initialize_config</code></td><td><span class="badge ok">DONE</span></td><td>Config PDA, mint, counters</td></tr>
-      <tr><td><code>register_agent</code></td><td><span class="badge ok">DONE</span></td><td>AgentIdentity + CRI PDAs</td></tr>
-      <tr><td><code>issue_authority</code></td><td><span class="badge ok">DONE</span></td><td>Root + parent depth/budget/policy</td></tr>
-      <tr><td><code>revoke_authority</code></td><td><span class="badge stub">STUB</span></td><td>Accounts wired</td></tr>
-      <tr><td><code>pay</code></td><td><span class="badge stub">STUB</span></td><td>Needs token CPI</td></tr>
-      <tr><td><code>create_escrow</code></td><td><span class="badge stub">STUB</span></td><td>Vault PDA seeds set</td></tr>
-      <tr><td><code>release_escrow</code></td><td><span class="badge stub">STUB</span></td><td>CRI accounts ready</td></tr>
-      <tr><td><code>cancel_escrow</code></td><td><span class="badge stub">STUB</span></td><td>Refund path stub</td></tr>
-      <tr><td><code>atomic_split</code></td><td><span class="badge stub">STUB</span></td><td>Remaining accounts pattern</td></tr>
-      <tr><td><code>create_org</code></td><td><span class="badge stub">STUB</span></td><td>Org + member + treasury</td></tr>
-      <tr><td><code>deposit_to_org</code></td><td><span class="badge stub">STUB</span></td><td>Member-gated</td></tr>
-      <tr><td><code>org_split</code></td><td><span class="badge stub">STUB</span></td><td>Admin-gated</td></tr>
-      <tr><td><code>dissolve_org</code></td><td><span class="badge stub">STUB</span></td><td>share_bps residual</td></tr>
+      <tr><td>Program ID</td><td><code>8i5E3R2to4R57TEPFs5DmxhDMAUUvWcXjFZup6MnCMEn</code></td></tr>
+      <tr><td>Devnet config</td><td><code>JCbqqJxxCzYzfs1YK3FDD5ZvW66ZbMNq82u3gto1Pmok</code></td></tr>
+      <tr><td>Devnet mint</td><td><code>CBVW7hZ14AUkZM2AUYs44J83GgzyY891ugknDSbQJpTz</code></td></tr>
+      <tr><td>Client</td><td>in-repo <code>client/</code> (<code>AeonClient</code>)</td></tr>
+      <tr><td>Release</td><td><code>v0.1.0</code> — see CHANGELOG + RELEASE_NOTES</td></tr>
     </tbody>
   </table>
 
+  <h2>Instruction surface (all shipped)</h2>
+  <table>
+    <thead><tr><th>#</th><th>Instruction</th><th>Status</th><th>Role</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td><code>initialize_config</code></td><td><span class="badge ok">DONE</span></td><td>Admin binds protocol mint</td></tr>
+      <tr><td>2</td><td><code>register_agent</code></td><td><span class="badge ok">DONE</span></td><td>Agent identity + CRI</td></tr>
+      <tr><td>3</td><td><code>issue_authority</code></td><td><span class="badge ok">DONE</span></td><td>Root / child scoped budget</td></tr>
+      <tr><td>4</td><td><code>revoke_authority</code></td><td><span class="badge ok">DONE</span></td><td>Revoke + direct-child cascade</td></tr>
+      <tr><td>5</td><td><code>pay</code></td><td><span class="badge ok">DONE</span></td><td>Fail-closed spend</td></tr>
+      <tr><td>6</td><td><code>create_escrow</code></td><td><span class="badge ok">DONE</span></td><td>Lock to vault (fail-closed)</td></tr>
+      <tr><td>7</td><td><code>release_escrow</code></td><td><span class="badge ok">DONE</span></td><td>Vault → payee</td></tr>
+      <tr><td>8</td><td><code>cancel_escrow</code></td><td><span class="badge ok">DONE</span></td><td>Vault → payer</td></tr>
+      <tr><td>9</td><td><code>atomic_split</code></td><td><span class="badge ok">DONE</span></td><td>Multi-leg, one spent commit</td></tr>
+      <tr><td>10</td><td><code>create_org</code></td><td><span class="badge ok">DONE</span></td><td>Org + treasury + creator</td></tr>
+      <tr><td>11</td><td><code>join_org</code></td><td><span class="badge ok">DONE</span></td><td>Admin admits member</td></tr>
+      <tr><td>12</td><td><code>set_member_share</code></td><td><span class="badge ok">DONE</span></td><td>Adjust share_bps</td></tr>
+      <tr><td>13</td><td><code>deposit_to_org</code></td><td><span class="badge ok">DONE</span></td><td>Fund treasury</td></tr>
+      <tr><td>14</td><td><code>org_split</code></td><td><span class="badge ok">DONE</span></td><td>Treasury → member</td></tr>
+      <tr><td>15</td><td><code>dissolve_org</code></td><td><span class="badge ok">DONE</span></td><td>Complete share set required</td></tr>
+      <tr><td>16</td><td><code>reclaim_org_residual</code></td><td><span class="badge ok">DONE</span></td><td>Closed-org residual</td></tr>
+    </tbody>
+  </table>
+  <p class="note">Receipt PDA layout exists; on-chain Receipt instruction is deferred (stretch).</p>
+
+  <h2>Hard invariants</h2>
+  <table>
+    <thead><tr><th>ID</th><th>Invariant</th><th>Evidence</th></tr></thead>
+    <tbody>
+      <tr><td>H1</td><td>Spent-after-CPI (fail-closed)</td><td>HEAVY freeze 8/8 · hook 3/3</td></tr>
+      <tr><td>H2</td><td>Authority depth ≤ 3 + parent constraints</td><td>NEG-AUTH-*</td></tr>
+      <tr><td>H3</td><td>Revoke cascade remaining_accounts correctness</td><td>NEG-REV-* · Trident P2</td></tr>
+      <tr><td>H4</td><td>Org share_bps conservation + complete dissolve</td><td>NEG-ORG-*</td></tr>
+      <tr><td>H5</td><td>Mint bound to <code>config.aeon_mint</code></td><td>NEG-T22-*</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Safety snapshot (v0.1.0)</h2>
+  <table>
+    <thead><tr><th>Suite</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>Negative e2e</td><td><span class="badge ok">70 PASS</span> + <span class="badge soft">1 ACCEPTED</span> (NEG-AUTH-011) + 2 SKIP</td></tr>
+      <tr><td>HEAVY freeze CPI-fail spent</td><td><span class="badge ok">8/8</span></td></tr>
+      <tr><td>HEAVY T22 transfer-hook deny (Approach A)</td><td><span class="badge ok">3/3</span></td></tr>
+      <tr><td>Trident P2 cascade / remaining_accounts</td><td><span class="badge ok">PASS</span> (200×40, 0 panics)</td></tr>
+      <tr><td>Devnet escrow → org → dissolve</td><td><span class="badge ok">PASS</span></td></tr>
+      <tr><td>Open Critical / High (CPI spent review)</td><td><span class="badge ok">None</span></td></tr>
+    </tbody>
+  </table>
+  <p class="note">Soft model: dual-child overissue (both children may take <code>budget = parent.remaining</code>) is <strong>ACCEPTED</strong> — issue does not reserve parent spent. Do not market as a hard reject.</p>
+
   <h2>PDA seeds</h2>
-  <pre>Config          ["aeon_config"]
-AgentIdentity   ["agent", agent]
-CRI             ["cri", agent]
-Authority       ["authority", id_le]
-Escrow          ["escrow", id_le]
-EscrowVault     ["escrow_vault", id_le]
-Organization    ["org", id_le]
-OrgTreasury     ["org_treasury", id_le]
-OrgMember       ["org_member", id_le, agent]
-Receipt         ["receipt", id_le]</pre>
+  <pre>config          = ["aeon_config"]
+agent_identity  = ["agent", agent]
+cri             = ["cri", agent]
+authority       = ["authority", id_le]
+escrow          = ["escrow", id_le]
+escrow_vault    = ["escrow_vault", id_le]
+org             = ["org", id_le]
+org_treasury    = ["org_treasury", id_le]
+org_member      = ["org_member", id_le, agent]
+receipt         = ["receipt", id_le]   // layout only — no instruction yet</pre>
 
-  <h2>Build</h2>
-  <pre>cd aeon-program
-cargo check -p aeon    # verified in scaffold environment
-anchor build           # requires full Anchor + Solana CLI
-anchor test            # runs tests/aeon.ts</pre>
+  <h2>Build & try</h2>
+  <pre>git clone https://github.com/Adaptive-Liquidity/aeon-program.git
+cd aeon-program
+npm ci
+npm run build:sbf              # canonical SBF path (+ committed IDL)
+npm run demo:economy           # localnet 9-act narrative
+npm run test:sdk && npm run typecheck:sdk
+npm run test:e2e
+# live:
+npm run smoke:devnet && npm run demo:devnet</pre>
+  <p class="note">Prefer <code>npm run build:sbf</code> over full <code>anchor build</code> IDL regen on modern rustc (known <code>anchor-syn</code> / <code>Span::source_file</code> break). Details: docs/QUICKSTART.md · docs/CI.md</p>
 
-  <h2>Heavy review checklist (next)</h2>
-  <pre>1. Signer / PDA ownership on all implemented ixs
-2. Parent authority optional account handling
-3. authority_id == counter+1 race / client correctness
-4. Category intersection edge cases
-5. No fund-moving path without authority (when implementing pay)</pre>
+  <h2>What this is not</h2>
+  <table>
+    <thead><tr><th>Non-goal</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td>Yield / APY / emissions</td><td>No guaranteed returns</td></tr>
+      <tr><td>Tokenomics / buyback boosters</td><td>Separate launch systems</td></tr>
+      <tr><td>Full agent runtime</td><td>Economic layer only; runtimes off-chain</td></tr>
+      <tr><td>Mainnet formal audit (v0.1)</td><td>Deferred stretch</td></tr>
+    </tbody>
+  </table>
+
+  <footer>
+    Adaptive Liquidity Labs (<code>@all4aeon</code>) ·
+    <a href="https://github.com/Adaptive-Liquidity/aeon-program">Adaptive-Liquidity/aeon-program</a> ·
+    v0.1.0 product surface
+  </footer>
 </main>
 </body>
 </html>

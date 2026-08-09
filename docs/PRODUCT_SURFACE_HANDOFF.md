@@ -4,7 +4,7 @@
 **Release:** **v0.1.0**  
 **Program ID:** `8i5E3R2to4R57TEPFs5DmxhDMAUUvWcXjFZup6MnCMEn`  
 
-Phases 0–5 and R1–R4 are complete. Stretch work is **R6** only.
+Phases 0–5 and R1–R4 are complete. Pre-R6 cleanups are done. Stretch work is **R6**.
 
 ---
 
@@ -20,6 +20,9 @@ Phases 0–5 and R1–R4 are complete. Stretch work is **R6** only.
 - [x] Frozen client public API + examples  
 - [x] CI on every push; fuzz nightly  
 - [x] **Tag `v0.1.0` + CHANGELOG + release notes**  
+- [x] **docs-site/index.html** updated to v0.1.0 product surface (no 3/13 stub claim)  
+- [x] **CI Solana PATH fix** (export PATH in install step; documented in docs/CI.md)  
+- [x] **Formal GitHub Release** for `v0.1.0`
 
 Release notes: [`RELEASE_NOTES_v0.1.0.md`](./RELEASE_NOTES_v0.1.0.md) · [`CHANGELOG.md`](../CHANGELOG.md)
 
