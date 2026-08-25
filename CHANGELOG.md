@@ -7,9 +7,9 @@ Versioning: program + in-repo SDK share the same release cut.
 
 ---
 
-## [0.2.0] — unreleased (in progress)
+## [0.2.0] — 2026-08-25
 
-**Status:** Rust implemented; IDL/SDK/tests/docs done; **v0.2 live on devnet (new program ID)**.
+**Status:** Released. Rust implemented; IDL/SDK/tests/docs done; **v0.2 live on devnet (new program ID)**.
 
 ### Added — on-chain (4 new instructions, 20 total)
 

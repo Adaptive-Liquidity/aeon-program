@@ -3,14 +3,16 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>AEON — Agent Economic Control Plane</title>
-<meta name="description" content="AEON v0.1.0 product surface: 16 on-chain instructions, TypeScript Agent SDK, fail-closed spend, live on Solana devnet."/>
+<title>AEON — The Economic Control Plane for Autonomous AI Agents</title>
+<meta name="description" content="AEON v0.2.0: scoped spending authorities, fail-closed accounting, hash-chained provenance receipts, slashable bonds, and multi-agent organizations — enforced on-chain on Solana."/>
 <style>
 :root{--bg:#0b1220;--panel:#121a2b;--border:#1e2a44;--text:#e8eefc;--muted:#8b9bb8;--ok:#22c55e;--soft:#38bdf8;--accent:#38bdf8;--warn:#f59e0b}
 *{box-sizing:border-box}body{margin:0;font-family:ui-sans-serif,system-ui,sans-serif;background:radial-gradient(1000px 500px at 10% -10%,#1a2744,var(--bg));color:var(--text);min-height:100vh}
 header{padding:28px 24px;border-bottom:1px solid var(--border);background:rgba(10,16,28,.75);backdrop-filter:blur(8px);position:sticky;top:0;z-index:1}
 h1{margin:0 0 6px;font-size:1.4rem} .sub{color:var(--muted);font-size:.9rem;line-height:1.45}
 main{max-width:960px;margin:0 auto;padding:24px}
+.hero{background:linear-gradient(135deg,rgba(56,189,248,.08),rgba(34,197,94,.05));border:1px solid var(--border);border-radius:16px;padding:26px;margin:20px 0 28px;line-height:1.65;font-size:.95rem;color:#d6e2f5}
+.hero strong{color:var(--text)}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:16px 0 28px}
 .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px}
 .card .l{color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em}
@@ -37,17 +39,31 @@ footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--border);color
 <header>
   <h1>AEON</h1>
   <div class="sub">
-    Agent economic control plane on Solana · <strong>v0.1.0 product surface</strong><br/>
-    Anchor 0.30.1 · 16 instructions · TypeScript Agent SDK · fail-closed spend · live on devnet<br/>
+    The economic control plane for autonomous AI agents · <strong>v0.2.0</strong><br/>
+    Anchor 0.30.1 · 20 instructions · TypeScript Agent SDK · fail-closed spend · live on devnet<br/>
     <em>Not a yield / APY / emissions product.</em>
   </div>
 </header>
 <main>
+
+  <section class="hero">
+    Autonomous agents are starting to move real money — and today their spending power is a
+    <strong>hot private key</strong>. One prompt injection or buggy planner loop drains the wallet.
+    Off-chain guardrails are suggestions; nothing enforces them.
+    <br/><br/>
+    <strong>AEON moves enforcement on-chain.</strong> An agent never holds open-ended spend power — it
+    holds a <strong>scoped authority</strong>: budgeted, category-limited, depth-capped, expirable.
+    Every debit is accounted for by the program itself: if the token transfer fails,
+    <strong>the ledger does not move</strong>. Misbehaving branches are revoked in a cascade and their
+    bonds slashed. Every action leaves a tamper-evident, hash-chained receipt bound to the agent's identity.
+  </section>
+
   <div class="grid">
-    <div class="card"><div class="l">Instructions</div><div class="v" style="color:var(--ok)">16</div></div>
-    <div class="card"><div class="l">Implemented</div><div class="v" style="color:var(--ok)">16</div></div>
-    <div class="card"><div class="l">Negatives</div><div class="v" style="color:var(--ok)">70 PASS</div></div>
+    <div class="card"><div class="l">Instructions</div><div class="v" style="color:var(--ok)">20</div></div>
+    <div class="card"><div class="l">Implemented</div><div class="v" style="color:var(--ok)">20</div></div>
+    <div class="card"><div class="l">Negatives</div><div class="v" style="color:var(--ok)">68+ PASS</div></div>
     <div class="card"><div class="l">HEAVY CPI</div><div class="v" style="color:var(--ok)">8/8 · 3/3</div></div>
+    <div class="card"><div class="l">Fuzz</div><div class="v" style="color:var(--ok)">0 panics</div></div>
   </div>
 
   <div class="links">
@@ -55,19 +71,35 @@ footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--border);color
     <a href="https://github.com/Adaptive-Liquidity/aeon-program/blob/main/docs/OVERVIEW.md">Overview</a>
     <a href="https://github.com/Adaptive-Liquidity/aeon-program/blob/main/docs/QUICKSTART.md">Quickstart</a>
     <a href="https://github.com/Adaptive-Liquidity/aeon-program/blob/main/docs/SECURITY_MODEL.md">Security model</a>
+    <a href="https://github.com/Adaptive-Liquidity/aeon-program/blob/main/docs/FINAL_ARCHITECTURE.md">Architecture</a>
     <a href="https://github.com/Adaptive-Liquidity/aeon-program/blob/main/docs/DEVNET.md">Devnet</a>
     <a href="https://explorer.solana.com/address/TcZ9MKNw4eGvoe3K75e4M3zCwZCzEsb6WvrS8LqNgdm?cluster=devnet">Explorer</a>
   </div>
 
-  <h2>Coordinates</h2>
+  <h2>Coordinates (v0.2)</h2>
   <table>
     <thead><tr><th>Field</th><th>Value</th></tr></thead>
     <tbody>
       <tr><td>Program ID</td><td><code>TcZ9MKNw4eGvoe3K75e4M3zCwZCzEsb6WvrS8LqNgdm</code></td></tr>
-      <tr><td>Devnet config</td><td><code>JCbqqJxxCzYzfs1YK3FDD5ZvW66ZbMNq82u3gto1Pmok</code></td></tr>
-      <tr><td>Devnet mint</td><td><code>CBVW7hZ14AUkZM2AUYs44J83GgzyY891ugknDSbQJpTz</code></td></tr>
+      <tr><td>Devnet config</td><td><code>3oFvpSfXS6A4Bpotor2cqbcpwyhbeXPiaAXBnDExkPmp</code></td></tr>
+      <tr><td>Devnet mint</td><td><code>DaXLutwYNUJNsHRSwhYLefWgWFfDqm5J5g2vp4xhEVrS</code></td></tr>
+      <tr><td>Upgrade authority</td><td><code>4bpiP5ddQhEbYxtJJL1qTecvMzzqw38NafoqfUF6R6CY</code></td></tr>
       <tr><td>Client</td><td>in-repo <code>client/</code> (<code>AeonClient</code>)</td></tr>
-      <tr><td>Release</td><td><code>v0.1.0</code> — see CHANGELOG + RELEASE_NOTES</td></tr>
+      <tr><td>Release</td><td><code>v0.2.0</code> — see CHANGELOG + RELEASE_NOTES</td></tr>
+    </tbody>
+  </table>
+  <p class="note">The v0.1 ID (<code>8i5E3R2…</code>) was abandoned after its upgrade-authority wallet was lost; v0.2 redeployed fresh under the ID above.</p>
+
+  <h2>The six primitives</h2>
+  <table>
+    <thead><tr><th>Primitive</th><th>What it gives agents</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Identity</strong></td><td>Agent registration + non-transferable CRI (Cryptographic Reputation Index) accumulating volume and commitments</td></tr>
+      <tr><td><strong>Scoped authority</strong></td><td>Hierarchical grants: budget · max-per-tx · max-total · category whitelist · expiry · depth ≤ 3. Children never exceed the parent's remainder</td></tr>
+      <tr><td><strong>Fail-closed spend</strong></td><td><code>pay</code> / <code>atomic_split</code> / escrow: policy → token CPI → commit. Hostile mints can stop money; they cannot falsify the ledger</td></tr>
+      <tr><td><strong>Escrow</strong></td><td>Conditional locks (immediate / oracle / timeout) with release and cancel paths</td></tr>
+      <tr><td><strong>Organizations</strong></td><td>Multi-agent swarms with share-based treasury claims; dissolution requires the complete share set — no silent siphons</td></tr>
+      <tr><td><strong>Provenance &amp; teeth</strong> <span class="badge soft">v0.2</span></td><td>Hash-chained CRI-bound receipts · admin pause kill switch · scheduled authority expiry · slashable bonds</td></tr>
     </tbody>
   </table>
 
@@ -77,89 +109,97 @@ footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--border);color
     <tbody>
       <tr><td>1</td><td><code>initialize_config</code></td><td><span class="badge ok">DONE</span></td><td>Admin binds protocol mint</td></tr>
       <tr><td>2</td><td><code>register_agent</code></td><td><span class="badge ok">DONE</span></td><td>Agent identity + CRI</td></tr>
-      <tr><td>3</td><td><code>issue_authority</code></td><td><span class="badge ok">DONE</span></td><td>Root / child scoped budget</td></tr>
+      <tr><td>3</td><td><code>issue_authority</code></td><td><span class="badge ok">DONE</span></td><td>Root / child scoped budget (+ optional bond)</td></tr>
       <tr><td>4</td><td><code>revoke_authority</code></td><td><span class="badge ok">DONE</span></td><td>Revoke + direct-child cascade</td></tr>
-      <tr><td>5</td><td><code>pay</code></td><td><span class="badge ok">DONE</span></td><td>Fail-closed spend</td></tr>
+      <tr><td>5</td><td><code>pay</code></td><td><span class="badge ok">DONE</span></td><td>Fail-closed spend under authority</td></tr>
       <tr><td>6</td><td><code>create_escrow</code></td><td><span class="badge ok">DONE</span></td><td>Lock to vault (fail-closed)</td></tr>
       <tr><td>7</td><td><code>release_escrow</code></td><td><span class="badge ok">DONE</span></td><td>Vault → payee</td></tr>
       <tr><td>8</td><td><code>cancel_escrow</code></td><td><span class="badge ok">DONE</span></td><td>Vault → payer</td></tr>
       <tr><td>9</td><td><code>atomic_split</code></td><td><span class="badge ok">DONE</span></td><td>Multi-leg, one spent commit</td></tr>
-      <tr><td>10</td><td><code>create_org</code></td><td><span class="badge ok">DONE</span></td><td>Org + treasury + creator</td></tr>
+      <tr><td>10</td><td><code>create_org</code></td><td><span class="badge ok">DONE</span></td><td>Org + treasury + creator member</td></tr>
       <tr><td>11</td><td><code>join_org</code></td><td><span class="badge ok">DONE</span></td><td>Admin admits member</td></tr>
       <tr><td>12</td><td><code>set_member_share</code></td><td><span class="badge ok">DONE</span></td><td>Adjust share_bps</td></tr>
       <tr><td>13</td><td><code>deposit_to_org</code></td><td><span class="badge ok">DONE</span></td><td>Fund treasury</td></tr>
       <tr><td>14</td><td><code>org_split</code></td><td><span class="badge ok">DONE</span></td><td>Treasury → member</td></tr>
       <tr><td>15</td><td><code>dissolve_org</code></td><td><span class="badge ok">DONE</span></td><td>Complete share set required</td></tr>
-      <tr><td>16</td><td><code>reclaim_org_residual</code></td><td><span class="badge ok">DONE</span></td><td>Closed-org residual</td></tr>
+      <tr><td>16</td><td><code>reclaim_org_residual</code></td><td><span class="badge ok">DONE</span></td><td>Closed-org residual reclaim</td></tr>
+      <tr><td>17</td><td><code>create_receipt</code></td><td><span class="badge soft">v0.2</span></td><td>Hash-chained provenance receipt (CRI-bound)</td></tr>
+      <tr><td>18</td><td><code>expire_authority</code></td><td><span class="badge soft">v0.2</span></td><td>Scheduled expiry, no account close</td></tr>
+      <tr><td>19</td><td><code>set_paused</code></td><td><span class="badge soft">v0.2</span></td><td>Admin pause/unpause kill switch</td></tr>
+      <tr><td>20</td><td><code>slash_bond</code></td><td><span class="badge soft">v0.2</span></td><td>Slash authority bond → destination (fail-closed)</td></tr>
     </tbody>
   </table>
-  <p class="note">Receipt PDA layout exists; on-chain Receipt instruction is deferred (stretch).</p>
 
   <h2>Hard invariants</h2>
   <table>
     <thead><tr><th>ID</th><th>Invariant</th><th>Evidence</th></tr></thead>
     <tbody>
-      <tr><td>H1</td><td>Spent-after-CPI (fail-closed)</td><td>HEAVY freeze 8/8 · hook 3/3</td></tr>
-      <tr><td>H2</td><td>Authority depth ≤ 3 + parent constraints</td><td>NEG-AUTH-*</td></tr>
-      <tr><td>H3</td><td>Revoke cascade remaining_accounts correctness</td><td>NEG-REV-* · Trident P2</td></tr>
-      <tr><td>H4</td><td>Org share_bps conservation + complete dissolve</td><td>NEG-ORG-*</td></tr>
-      <tr><td>H5</td><td>Mint bound to <code>config.aeon_mint</code></td><td>NEG-T22-*</td></tr>
+      <tr><td>H1</td><td>Spent-after-CPI (fail-closed) — ledger commits only after token CPI succeeds</td><td>HEAVY freeze 8/8 · hook 3/3</td></tr>
+      <tr><td>H2</td><td>Authority depth ≤ 3 + parent remaining constraints</td><td>NEG-AUTH-*</td></tr>
+      <tr><td>H3</td><td>Revoke cascade remaining_accounts correctness</td><td>NEG-REV-* · Trident P2 fuzz</td></tr>
+      <tr><td>H4</td><td>Org share_bps conservation + complete dissolve set</td><td>NEG-ORG-*</td></tr>
+      <tr><td>H5</td><td>Mint bound to <code>config.aeon_mint</code>; SPL + Token-2022 via interface</td><td>NEG-T22-*</td></tr>
+      <tr><td>H6 <span class="badge soft">v0.2</span></td><td>Receipt chain: prev_hash read from CRI, hash program-computed, sequence enforced</td><td>Source review · NEG-RCPT-* landing</td></tr>
+      <tr><td>H7 <span class="badge soft">v0.2</span></td><td>Bond fail-closed: validate before CPI, commit after transfer</td><td>Source review · NEG-BOND-* landing</td></tr>
     </tbody>
   </table>
 
-  <h2>Safety snapshot (v0.1.0)</h2>
+  <h2>Safety snapshot</h2>
   <table>
     <thead><tr><th>Suite</th><th>Status</th></tr></thead>
     <tbody>
-      <tr><td>Negative e2e</td><td><span class="badge ok">70 PASS</span> + <span class="badge soft">1 ACCEPTED</span> (NEG-AUTH-011) + 2 SKIP</td></tr>
-      <tr><td>HEAVY freeze CPI-fail spent</td><td><span class="badge ok">8/8</span></td></tr>
+      <tr><td>Negative e2e catalog</td><td><span class="badge ok">68 PASS</span> + <span class="badge soft">1 ACCEPTED</span> (NEG-AUTH-011 dual-child overissue) + Token-2022 legs</td></tr>
+      <tr><td>HEAVY freeze CPI-fail spent invariance</td><td><span class="badge ok">8/8</span></td></tr>
       <tr><td>HEAVY T22 transfer-hook deny (Approach A)</td><td><span class="badge ok">3/3</span></td></tr>
-      <tr><td>Trident P2 cascade / remaining_accounts</td><td><span class="badge ok">PASS</span> (200×40, 0 panics)</td></tr>
-      <tr><td>Devnet escrow → org → dissolve</td><td><span class="badge ok">PASS</span></td></tr>
-      <tr><td>Open Critical / High (CPI spent review)</td><td><span class="badge ok">None</span></td></tr>
+      <tr><td>Trident P2 cascade / remaining_accounts fuzz</td><td><span class="badge ok">PASS</span> (200×40, 0 panics)</td></tr>
+      <tr><td>v0.2 smoke (receipt chain · pause gate · bond issue/slash)</td><td><span class="badge ok">PASS</span></td></tr>
+      <tr><td>Devnet escrow → org → dissolve demo</td><td><span class="badge ok">PASS</span></td></tr>
+      <tr><td>SDK offline units + typecheck</td><td><span class="badge ok">6/6 · exit 0</span></td></tr>
     </tbody>
   </table>
-  <p class="note">Soft model: dual-child overissue (both children may take <code>budget = parent.remaining</code>) is <strong>ACCEPTED</strong> — issue does not reserve parent spent. Do not market as a hard reject.</p>
+  <p class="note">Soft model: dual-child overissue is <strong>ACCEPTED</strong> — parents enforce remaining at spend time, not at issue time. Do not market it as a hard reject. The four v0.2 instructions are implemented and fuzzed; their dedicated NEG-* catalog entries are still landing — do not treat receipts/bonds as production-audited yet.</p>
 
   <h2>PDA seeds</h2>
   <pre>config          = ["aeon_config"]
 agent_identity  = ["agent", agent]
 cri             = ["cri", agent]
 authority       = ["authority", id_le]
+authority_bond  = ["authority_bond", id_le]   // v0.2
 escrow          = ["escrow", id_le]
 escrow_vault    = ["escrow_vault", id_le]
 org             = ["org", id_le]
 org_treasury    = ["org_treasury", id_le]
 org_member      = ["org_member", id_le, agent]
-receipt         = ["receipt", id_le]   // layout only — no instruction yet</pre>
+receipt         = ["receipt", id_le]          // v0.2 — live instruction
+oracle_entry    = ["oracle_entry", ...]</pre>
 
-  <h2>Build & try</h2>
+  <h2>Build &amp; try</h2>
   <pre>git clone https://github.com/Adaptive-Liquidity/aeon-program.git
 cd aeon-program
 npm ci
 npm run build:sbf              # canonical SBF path (+ committed IDL)
-npm run demo:economy           # localnet 9-act narrative
+npm run demo:economy           # localnet multi-act SDK narrative
 npm run test:sdk && npm run typecheck:sdk
 npm run test:e2e
 # live:
 npm run smoke:devnet && npm run demo:devnet</pre>
-  <p class="note">Prefer <code>npm run build:sbf</code> over full <code>anchor build</code> IDL regen on modern rustc (known <code>anchor-syn</code> / <code>Span::source_file</code> break). Details: docs/QUICKSTART.md · docs/CI.md</p>
+  <p class="note">Prefer <code>npm run build:sbf</code> over full <code>anchor build</code> IDL regen on modern rustc (known <code>anchor-syn</code> break). Details: docs/QUICKSTART.md · docs/CI.md</p>
 
   <h2>What this is not</h2>
   <table>
     <thead><tr><th>Non-goal</th><th>Why</th></tr></thead>
     <tbody>
-      <tr><td>Yield / APY / emissions</td><td>No guaranteed returns</td></tr>
+      <tr><td>Yield / APY / emissions</td><td>No guaranteed returns — infrastructure, not a returns product</td></tr>
       <tr><td>Tokenomics / buyback boosters</td><td>Separate launch systems</td></tr>
-      <tr><td>Full agent runtime</td><td>Economic layer only; runtimes off-chain</td></tr>
-      <tr><td>Mainnet formal audit (v0.1)</td><td>Deferred stretch</td></tr>
+      <tr><td>Full agent runtime</td><td>Economic layer only; runtimes stay off-chain</td></tr>
+      <tr><td>Mainnet formal audit</td><td>Deferred stretch work</td></tr>
     </tbody>
   </table>
 
   <footer>
     Adaptive Liquidity Labs (<code>@all4aeon</code>) ·
     <a href="https://github.com/Adaptive-Liquidity/aeon-program">Adaptive-Liquidity/aeon-program</a> ·
-    v0.1.0 product surface
+    v0.2.0 product surface
   </footer>
 </main>
 </body>
