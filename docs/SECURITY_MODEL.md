@@ -125,13 +125,14 @@ On `create_receipt`:
 
 On `slash_bond`:
 
-- Validate authority + bond state **before** any CPI  
-- Bond vault must be owned by the bond PDA (ATA)  
-- Transfer bond → destination, then commit `bond.status = SLASHED`  
+- Validate authority + bond state **before** any CPI (`BondNotActive` check first)
+- Bond vault must be owned by the bond PDA (ATA); the vault ATA must be **pre-created by the caller** (Anchor deserializes `bond_vault` before the handler runs — see `docs/PHASE2_BOND_VAULT_FIX.md`)
+- `bond.status = SLASHED` is written **before** the `transfer_checked` CPI; fail-closed behavior comes from Solana transaction atomicity — if the CPI fails, the status write and transfer roll back together
 
 **Evidence:** source review only — **NEG-BOND-* tests PENDING** (CASE_CATALOG v0.2).  
-**Known gap:** `issue_authority` must initialize the bond vault as a bond-PDA-owned ATA
-before the transfer (see `docs/PHASE2_BOND_VAULT_FIX.md`). Until fixed, the bond path is broken.
+**Known gap:** the caller-side vault pre-creation requirement (see above). Until the SDK/handler
+handles it (see `docs/PHASE2_BOND_VAULT_FIX.md`), an uninitialized bond vault makes issuance fail
+at account validation rather than auto-creating the vault.
 
 ---
 

@@ -146,6 +146,7 @@ describe("aeon e2e", () => {
         new BN(5_000_000),
         [],
         new BN(0),
+        new BN(0),
         new BN(0)
       )
       .accounts({
@@ -154,6 +155,12 @@ describe("aeon e2e", () => {
         agentIdentity: agentPda(admin.publicKey),
         parentAuthority: null,
         authority: authorityPda(1),
+        bond: null,
+        agentVault: null,
+        bondVault: null,
+        aeonMint: null,
+        tokenProgram: null,
+        associatedTokenProgram: null,
         systemProgram: SystemProgram.programId,
       })
       .rpc();
@@ -173,6 +180,7 @@ describe("aeon e2e", () => {
         new BN(500_000),
         [],
         new BN(1),
+        new BN(0),
         new BN(0)
       )
       .accounts({
@@ -181,6 +189,12 @@ describe("aeon e2e", () => {
         agentIdentity: agentPda(admin.publicKey),
         parentAuthority: authorityPda(1),
         authority: authorityPda(2),
+        bond: null,
+        agentVault: null,
+        bondVault: null,
+        aeonMint: null,
+        tokenProgram: null,
+        associatedTokenProgram: null,
         systemProgram: SystemProgram.programId,
       })
       .rpc();
@@ -205,6 +219,7 @@ describe("aeon e2e", () => {
           new BN(budget),
           [],
           new BN(parent),
+          new BN(0),
           new BN(0)
         )
         .accounts({
@@ -213,6 +228,12 @@ describe("aeon e2e", () => {
           agentIdentity: agentPda(admin.publicKey),
           parentAuthority: authorityPda(parent),
           authority: authorityPda(id),
+          bond: null,
+          agentVault: null,
+          bondVault: null,
+          aeonMint: null,
+          tokenProgram: null,
+          associatedTokenProgram: null,
           systemProgram: SystemProgram.programId,
         })
         .rpc();
@@ -228,6 +249,7 @@ describe("aeon e2e", () => {
           new BN(100),
           [],
           new BN(4),
+          new BN(0),
           new BN(0)
         )
         .accounts({
@@ -236,6 +258,12 @@ describe("aeon e2e", () => {
           agentIdentity: agentPda(admin.publicKey),
           parentAuthority: authorityPda(4),
           authority: authorityPda(5),
+          bond: null,
+          agentVault: null,
+          bondVault: null,
+          aeonMint: null,
+          tokenProgram: null,
+          associatedTokenProgram: null,
           systemProgram: SystemProgram.programId,
         })
         .rpc();

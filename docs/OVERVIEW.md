@@ -92,7 +92,7 @@ If a design doc sounds like a fixed-return product, it is **out of scope** for t
 | 16 | `reclaim_org_residual` | Closed-org residual | Yes |
 | 17 | `create_receipt` | Hash-chained provenance receipt (CRI-bound) | — |
 | 18 | `expire_authority` | Scheduled authority expiry (no account close) | — |
-| 19 | `set_paused` | Admin pause/unpause kill switch | — |
+| 19 | `set_paused` | Scoped pause gate over register/issue/pay/split/escrow/org/receipt entry points | — |
 | 20 | `slash_bond` | Slash authority bond → destination | **Yes — fail-closed** |
 
 **PDA seeds (canonical):**
@@ -124,7 +124,7 @@ These must always hold. Full treatment: [SECURITY_MODEL.md](./SECURITY_MODEL.md)
 4. **Org conservation** — Σ `share_bps` ≤ 10000; dissolve set covers total shares (no omitted-member siphon)  
 5. **Mint binding** — token accounts use `config.aeon_mint`; classic and Token-2022 program IDs accepted via interface  
 6. **Receipt chain integrity** (v0.2) — `prev_hash` read from CRI, hash program-computed, sequence enforced  
-7. **Bond fail-closed** (v0.2) — slash validates state before CPI; bond status committed after transfer  
+7. **Bond fail-closed** (v0.2) — slash validates state before CPI; Solana atomicity rolls back status + transfer together on failure  
 
 ---
 

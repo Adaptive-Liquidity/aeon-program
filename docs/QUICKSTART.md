@@ -148,7 +148,7 @@ await runEscrowLifecycle(aeon, {
 
 | Import | Role |
 |--------|------|
-| `AeonClient` | All 16 instructions + fetch helpers |
+| `AeonClient` | All 20 instructions + fetch helpers |
 | `pdas` / `pdas.*` | PDA derivation |
 | `categoryFromLabel` | Encode category `[u8;16]` |
 | `CONDITION`, `ROLE`, `AUTH_STATUS` | Enums matching on-chain |
@@ -178,8 +178,8 @@ You do **not** need to redeploy to explore the live program.
 | Field | Value |
 |-------|--------|
 | Program | `TcZ9MKNw4eGvoe3K75e4M3zCwZCzEsb6WvrS8LqNgdm` |
-| Config | `JCbqqJxxCzYzfs1YK3FDD5ZvW66ZbMNq82u3gto1Pmok` |
-| Mint | `CBVW7hZ14AUkZM2AUYs44J83GgzyY891ugknDSbQJpTz` |
+| Config | `3oFvpSfXS6A4Bpotor2cqbcpwyhbeXPiaAXBnDExkPmp` |
+| Mint | `DaXLutwYNUJNsHRSwhYLefWgWFfDqm5J5g2vp4xhEVrS` |
 | RPC | `https://api.devnet.solana.com` |
 
 ```bash
@@ -210,7 +210,7 @@ Catalog: [stoa/CASE_CATALOG.md](./stoa/CASE_CATALOG.md).
 | Symptom | Fix |
 |---------|-----|
 | `anchor build` fails on IDL / `source_file` | Use `npm run build:sbf`; keep committed IDL |
-| Program ID mismatch | Do not regenerate keypair; keep `8i5E3R2…` everywhere |
+| Program ID mismatch | Do not regenerate keypair; keep `TcZ9MKNw…` everywhere |
 | `Account already in use` on issue/escrow/org | Concurrent id; retry after fetching config counters |
 | Pay fails with category error | Category must be in authority’s set (use same `categoryFromLabel`) |
 | Token CPI fails, spent unchanged | **Expected** fail-closed behavior — see [SECURITY_MODEL.md](./SECURITY_MODEL.md) |
