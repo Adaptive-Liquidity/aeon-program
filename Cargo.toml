@@ -1,4 +1,7 @@
 [workspace]
+# NOTE: do not add local [patch.crates-io] entries here (e.g. anchor-syn-patched).
+# They break every fresh checkout/CI clone unless the patched crate is committed.
+# Canonical build path is `npm run build:sbf` + committed IDL — see docs/CI.md.
 members = ["programs/aeon"]
 resolver = "2"
 
@@ -11,6 +14,3 @@ codegen-units = 1
 opt-level = 3
 incremental = false
 codegen-units = 1
-
-[patch.crates-io]
-anchor-syn = { path = "anchor-syn-patched" }
