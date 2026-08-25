@@ -155,6 +155,12 @@ describe("aeon e2e", () => {
         agentIdentity: agentPda(admin.publicKey),
         parentAuthority: null,
         authority: authorityPda(1),
+        bond: null,
+        agentVault: null,
+        bondVault: null,
+        aeonMint: null,
+        tokenProgram: null,
+        associatedTokenProgram: null,
         systemProgram: SystemProgram.programId,
       })
       .rpc();
@@ -183,6 +189,12 @@ describe("aeon e2e", () => {
         agentIdentity: agentPda(admin.publicKey),
         parentAuthority: authorityPda(1),
         authority: authorityPda(2),
+        bond: null,
+        agentVault: null,
+        bondVault: null,
+        aeonMint: null,
+        tokenProgram: null,
+        associatedTokenProgram: null,
         systemProgram: SystemProgram.programId,
       })
       .rpc();
@@ -216,6 +228,12 @@ describe("aeon e2e", () => {
           agentIdentity: agentPda(admin.publicKey),
           parentAuthority: authorityPda(parent),
           authority: authorityPda(id),
+          bond: null,
+          agentVault: null,
+          bondVault: null,
+          aeonMint: null,
+          tokenProgram: null,
+          associatedTokenProgram: null,
           systemProgram: SystemProgram.programId,
         })
         .rpc();
@@ -240,6 +258,12 @@ describe("aeon e2e", () => {
           agentIdentity: agentPda(admin.publicKey),
           parentAuthority: authorityPda(4),
           authority: authorityPda(5),
+          bond: null,
+          agentVault: null,
+          bondVault: null,
+          aeonMint: null,
+          tokenProgram: null,
+          associatedTokenProgram: null,
           systemProgram: SystemProgram.programId,
         })
         .rpc();
