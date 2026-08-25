@@ -146,6 +146,7 @@ describe("aeon e2e", () => {
         new BN(5_000_000),
         [],
         new BN(0),
+        new BN(0),
         new BN(0)
       )
       .accounts({
@@ -173,6 +174,7 @@ describe("aeon e2e", () => {
         new BN(500_000),
         [],
         new BN(1),
+        new BN(0),
         new BN(0)
       )
       .accounts({
@@ -205,6 +207,7 @@ describe("aeon e2e", () => {
           new BN(budget),
           [],
           new BN(parent),
+          new BN(0),
           new BN(0)
         )
         .accounts({
@@ -228,6 +231,7 @@ describe("aeon e2e", () => {
           new BN(100),
           [],
           new BN(4),
+          new BN(0),
           new BN(0)
         )
         .accounts({
