@@ -1,6 +1,6 @@
-<div align="center">
-
 # AEON
+
+<div align="center">
 
 **The economic control plane for autonomous AI agents on Solana**
 
@@ -18,7 +18,7 @@ Scoped spending authorities · fail-closed accounting · hash-chained provenance
 
 Autonomous agents are starting to hold and move real money — paying APIs, hiring other agents, settling work. Today that authority lives in a **hot private key**. One prompt injection, one hallucinated planner step, one buggy retry loop, and the wallet is drained. Off-chain guardrails (rate limiters, allowlists, "responsible prompts") are suggestions. Nothing *enforces* them.
 
-AEON moves enforcement on-chain. An agent never holds open-ended spend power — it holds a **scoped authority**: a budgeted, category-limited, depth-capped, expirable grant whose every debit is accounted for by the program itself. If the token transfer fails, the ledger does not move. If a delegate misbehaves, its branch is revoked in a cascade and its bond is slashed. Every action leaves a tamper-evident, hash-chained receipt bound to the agent's identity.
+AEON moves enforcement on-chain. An agent never holds open-ended spend power — it holds a **scoped authority**: a budgeted, category-limited, depth-capped, expirable grant whose every debit is accounted for by the program itself. If the token transfer fails, the ledger does not move. Delegates can be revoked — cascading across their subtree — and authorities can post slashable bonds. Agents can anchor a hash-chained provenance receipt to their identity for any action worth proving.
 
 **The core insight:** an agent's spending power should be a *verifiable object on-chain* — not a secret in an environment variable.
 
@@ -42,13 +42,13 @@ Not a yield product. Not emissions or APY. Enforcement-first primitives for agen
 3. **Fail-closed spend** — `pay` / `atomic_split` / escrow follow a strict order: *validate policy → move tokens via CPI → then commit `spent`*. A hostile or frozen mint can make money not move — it can never make the ledger lie.
 4. **Escrow** — conditional locks (immediate / oracle / timeout) with release and cancel paths.
 5. **Organizations** — multi-agent swarms with share-based treasury claims; dissolution requires the *complete* share set, so no member can be silently siphoned out.
-6. **Provenance & teeth** *(v0.2)* — hash-chained **receipts** bound to CRI, admin **pause** kill switch, scheduled authority **expiry**, and **slashable bonds** attached to authorities.
+6. **Provenance & teeth** *(v0.2)* — opt-in hash-chained **receipts** bound to CRI (written via `create_receipt`), a scoped admin **pause** gate over registration/issuance/spend entry points, scheduled authority **expiry**, and **slashable bonds** attached to authorities (revocation and slashing are explicit signed instructions).
 
 ---
 
 ## Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │              Agent runtimes (consumers)                     │
 │     ElizaOS · LangGraph · custom · Nexus-sandboxed agents   │
@@ -81,7 +81,7 @@ Higher layers (AEON-IQ memory, Nexus sandboxing, operator panels) **consume** th
 | Authority | `issue_authority` · `revoke_authority` · `expire_authority` ᵛ⁰·² | Cascade revoke; expiry without close |
 | Money | `pay` · `atomic_split` · `create_escrow` · `release_escrow` · `cancel_escrow` | **Fail-closed money paths** |
 | Orgs | `create_org` · `join_org` · `set_member_share` · `deposit_to_org` · `org_split` · `dissolve_org` · `reclaim_org_residual` | Share conservation ≤ 10000 bps |
-| Provenance & control | `create_receipt` ᵛ⁰·² · `set_paused` ᵛ⁰·² · `slash_bond` ᵛ⁰·² | CRI-bound chain; kill switch; slashing |
+| Provenance & control | `create_receipt` ᵛ⁰·² · `set_paused` ᵛ⁰·² · `slash_bond` ᵛ⁰·² | CRI-bound chain; scoped pause gate; slashing |
 
 Full table with money-path flags: [OVERVIEW.md](docs/OVERVIEW.md#instruction-surface).
 
@@ -97,7 +97,7 @@ These are protocol law — violations are bugs ([full treatment](docs/SECURITY_M
 | H4 | **Org conservation** — Σ share_bps ≤ 10000; dissolve requires the exact complete set |
 | H5 | **Mint binding** — all token accounts use `config.aeon_mint`; SPL and Token-2022 both accepted |
 | H6 | **Receipt chain integrity** ᵛ⁰·² — `prev_hash` read from CRI, hash program-computed, sequence enforced |
-| H7 | **Bond fail-closed** ᵛ⁰·² — validate state before CPI; commit status after transfer |
+| H7 | **Bond fail-closed** ᵛ⁰·² — validate state before CPI; Solana atomicity rolls back status + transfer together on failure |
 
 ---
 
@@ -149,11 +149,11 @@ Safety here means evidence, not vibes:
 | HEAVY freeze CPI-fail (hostile mint) | `npm run test:heavy-cpi` | **8/8 PASS** |
 | HEAVY transfer-hook deny | `npm run test:heavy-hook` | **3/3 PASS** |
 | Trident fuzz (cascade / remaining_accounts) | `npm run test:fuzz:p2` | PASS — 200×40, 0 panics |
-| SDK offline units + typecheck | `npm run test:sdk` | 6/6 PASS |
+| SDK offline units + typecheck | `npm run test:sdk && npm run typecheck:sdk` | 6/6 PASS · exit 0 |
 
 The HEAVY suites prove the headline property directly: a frozen ATA or a rejecting transfer-hook makes the transaction fail **after policy passes**, and `authority.spent`, CRI counters, and vault balances are provably untouched.
 
-> **v0.2 honesty note:** the four new instructions (`create_receipt`, `expire_authority`, `set_paused`, `slash_bond`) are implemented, fuzzed, and live on devnet, but their dedicated NEG-* catalog entries are still landing. Do not treat receipts/bonds as production-audited until they do — see [SECURITY_MODEL §6](docs/SECURITY_MODEL.md).
+> **v0.2 honesty note:** the four new instructions (`create_receipt`, `expire_authority`, `set_paused`, `slash_bond`) are implemented and live on devnet, but their dedicated NEG-* catalog entries are still landing and the Trident harness does not yet cover them (it still uses the pre-v0.2 `issue_authority` ABI). The fuzz row above covers v0.1 surface only. Do not treat receipts/bonds as production-audited until that changes — see [SECURITY_MODEL §6](docs/SECURITY_MODEL.md).
 
 ---
 

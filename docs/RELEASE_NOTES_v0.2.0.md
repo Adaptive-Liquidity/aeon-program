@@ -24,7 +24,7 @@ Full changelog: [`CHANGELOG.md`](../CHANGELOG.md)
 
 ---
 
-## Coordinates (all environments)
+## Devnet coordinates
 
 | | |
 |--|--|
@@ -45,20 +45,25 @@ Full changelog: [`CHANGELOG.md`](../CHANGELOG.md)
 |-------------|--------------|------------|
 | `create_receipt` | Hash-chained provenance receipt: `prev_hash` read from CRI, hash program-computed, sequence enforced | No |
 | `expire_authority` | Scheduled expiry; preserves child/escrow/CRI anchors | No |
-| `set_paused` | Admin pause/unpause; emits `ConfigPaused` / `ConfigUnpaused` | No |
-| `slash_bond` | Slash an authority bond to a destination, fail-closed CPI | Yes |
+| `set_paused` | Scoped pause gate over register/issue/pay/atomic_split/create_escrow/create_org/create_receipt; emits `ConfigPaused` / `ConfigUnpaused`. Settlement, org treasury flows, revoke, expiry, and slash remain callable while paused | No |
+| `slash_bond` | Slash an authority bond to a destination; state validated before CPI, Solana atomicity makes failure fail-closed | Yes |
 
 State additions: `Authority.bond_amount`, `Cri.last_receipt_hash` / `receipt_count`,
 new `AuthorityBond` account. `issue_authority` now accepts `bond_amount` and optionally
-creates the bond + vault.
+creates the bond account; **the bond vault ATA must be pre-created by the caller**
+(Anchor deserializes `bond_vault` as a `TokenAccount`, so an absent ATA rejects the
+transaction before the handler can run its create-idempotent CPI — see
+[`PHASE2_BOND_VAULT_FIX.md`](./PHASE2_BOND_VAULT_FIX.md)). Receipts are opt-in via
+`create_receipt`; no instruction writes the receipt chain implicitly.
 
 ---
 
 ## Known limitations (do not overclaim)
 
-- The four v0.2 instructions are implemented, fuzzed, and smoke-tested; their dedicated
-  NEG-* catalog entries (~21 cases) are still landing. Receipts/bonds are **not**
-  production-audited yet.
+- The four v0.2 instructions are implemented and smoke-tested on devnet; their dedicated
+  NEG-* catalog entries (~21 cases) are still landing, and the Trident harness does not
+  yet cover them (it still encodes the pre-v0.2 `issue_authority` ABI). Receipts/bonds
+  are **not** production-audited yet.
 - Bond vault ATA initialization fix is tracked in
   [`PHASE2_BOND_VAULT_FIX.md`](./PHASE2_BOND_VAULT_FIX.md).
 - Soft model unchanged: dual-child overissue (NEG-AUTH-011) remains ACCEPTED.

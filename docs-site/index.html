@@ -54,8 +54,9 @@ footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--border);color
     <strong>AEON moves enforcement on-chain.</strong> An agent never holds open-ended spend power — it
     holds a <strong>scoped authority</strong>: budgeted, category-limited, depth-capped, expirable.
     Every debit is accounted for by the program itself: if the token transfer fails,
-    <strong>the ledger does not move</strong>. Misbehaving branches are revoked in a cascade and their
-    bonds slashed. Every action leaves a tamper-evident, hash-chained receipt bound to the agent's identity.
+    <strong>the ledger does not move</strong>. Delegates can be revoked — cascading across their subtree —
+    and authorities can post slashable bonds. Agents can anchor a hash-chained provenance receipt to
+    their identity via <code>create_receipt</code> for any action worth proving.
   </section>
 
   <div class="grid">
@@ -99,7 +100,7 @@ footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--border);color
       <tr><td><strong>Fail-closed spend</strong></td><td><code>pay</code> / <code>atomic_split</code> / escrow: policy → token CPI → commit. Hostile mints can stop money; they cannot falsify the ledger</td></tr>
       <tr><td><strong>Escrow</strong></td><td>Conditional locks (immediate / oracle / timeout) with release and cancel paths</td></tr>
       <tr><td><strong>Organizations</strong></td><td>Multi-agent swarms with share-based treasury claims; dissolution requires the complete share set — no silent siphons</td></tr>
-      <tr><td><strong>Provenance &amp; teeth</strong> <span class="badge soft">v0.2</span></td><td>Hash-chained CRI-bound receipts · admin pause kill switch · scheduled authority expiry · slashable bonds</td></tr>
+      <tr><td><strong>Provenance &amp; teeth</strong> <span class="badge soft">v0.2</span></td><td>Opt-in hash-chained CRI-bound receipts (via <code>create_receipt</code>) · scoped admin pause gate over registration/issuance/spend · scheduled authority expiry · slashable bonds (revoke/slash are explicit signed instructions)</td></tr>
     </tbody>
   </table>
 
@@ -125,7 +126,7 @@ footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--border);color
       <tr><td>16</td><td><code>reclaim_org_residual</code></td><td><span class="badge ok">DONE</span></td><td>Closed-org residual reclaim</td></tr>
       <tr><td>17</td><td><code>create_receipt</code></td><td><span class="badge soft">v0.2</span></td><td>Hash-chained provenance receipt (CRI-bound)</td></tr>
       <tr><td>18</td><td><code>expire_authority</code></td><td><span class="badge soft">v0.2</span></td><td>Scheduled expiry, no account close</td></tr>
-      <tr><td>19</td><td><code>set_paused</code></td><td><span class="badge soft">v0.2</span></td><td>Admin pause/unpause kill switch</td></tr>
+      <tr><td>19</td><td><code>set_paused</code></td><td><span class="badge soft">v0.2</span></td><td>Scoped pause gate (register/issue/pay/split/escrow/org/receipt)</td></tr>
       <tr><td>20</td><td><code>slash_bond</code></td><td><span class="badge soft">v0.2</span></td><td>Slash authority bond → destination (fail-closed)</td></tr>
     </tbody>
   </table>
@@ -140,7 +141,7 @@ footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--border);color
       <tr><td>H4</td><td>Org share_bps conservation + complete dissolve set</td><td>NEG-ORG-*</td></tr>
       <tr><td>H5</td><td>Mint bound to <code>config.aeon_mint</code>; SPL + Token-2022 via interface</td><td>NEG-T22-*</td></tr>
       <tr><td>H6 <span class="badge soft">v0.2</span></td><td>Receipt chain: prev_hash read from CRI, hash program-computed, sequence enforced</td><td>Source review · NEG-RCPT-* landing</td></tr>
-      <tr><td>H7 <span class="badge soft">v0.2</span></td><td>Bond fail-closed: validate before CPI, commit after transfer</td><td>Source review · NEG-BOND-* landing</td></tr>
+      <tr><td>H7 <span class="badge soft">v0.2</span></td><td>Bond fail-closed: validate before CPI; atomic rollback covers status + transfer together</td><td>Source review · NEG-BOND-* landing</td></tr>
     </tbody>
   </table>
 
@@ -157,7 +158,7 @@ footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--border);color
       <tr><td>SDK offline units + typecheck</td><td><span class="badge ok">6/6 · exit 0</span></td></tr>
     </tbody>
   </table>
-  <p class="note">Soft model: dual-child overissue is <strong>ACCEPTED</strong> — parents enforce remaining at spend time, not at issue time. Do not market it as a hard reject. The four v0.2 instructions are implemented and fuzzed; their dedicated NEG-* catalog entries are still landing — do not treat receipts/bonds as production-audited yet.</p>
+  <p class="note">Soft model: dual-child overissue is <strong>ACCEPTED</strong> — parents enforce remaining at spend time, not at issue time. Do not market it as a hard reject. The four v0.2 instructions are implemented and live on devnet; their dedicated NEG-* catalog entries are still landing and the Trident harness does not yet cover them — do not treat receipts/bonds as production-audited yet.</p>
 
   <h2>PDA seeds</h2>
   <pre>config          = ["aeon_config"]

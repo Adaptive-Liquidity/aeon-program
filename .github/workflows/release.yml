@@ -28,8 +28,7 @@ jobs:
         id: notes
         run: |
           set -euo pipefail
-          ver="${GITHUB_REF_NAME#v}"
-          file="docs/RELEASE_NOTES_${ver}.md"
+          file="docs/RELEASE_NOTES_${GITHUB_REF_NAME}.md"
           if [ -f "$file" ]; then
             echo "body_path=$file" >> "$GITHUB_OUTPUT"
           else
@@ -41,8 +40,8 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          args=(release create "$GITHUB_REF_NAME" --verify-tag --title "AEON $GITHUB_REF_NAME")
+          args=(--title "AEON $GITHUB_REF_NAME")
           if [ -n "${{ steps.notes.outputs.body_path }}" ]; then
             args+=(--notes-file "${{ steps.notes.outputs.body_path }}")
           fi
-          gh release create "${args[@]}"
+          gh release create "$GITHUB_REF_NAME" "${args[@]}"

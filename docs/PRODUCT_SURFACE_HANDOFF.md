@@ -5,7 +5,8 @@
 **Program ID:** `TcZ9MKNw4eGvoe3K75e4M3zCwZCzEsb6WvrS8LqNgdm`
 
 v0.1 phases 0–5 and R1–R4 are complete. v0.2 (receipts, bonds, pause, expiry) is implemented,
-fuzzed, and **live on devnet** under the new program ID.
+smoke-tested on devnet, and **live under the new program ID**. Trident fuzz covers the v0.1
+surface only (pre-v0.2 ABI).
 
 ---
 
@@ -34,13 +35,14 @@ fuzzed, and **live on devnet** under the new program ID.
 | # | Task | Priority |
 |---|------|----------|
 | 1 | NEG-* catalog entries for the four v0.2 instructions (~21 cases; see CASE_CATALOG v0.2 section) | **High** |
-| 2 | Bond vault ATA initialization fix (`docs/PHASE2_BOND_VAULT_FIX.md`) | **High** |
-| 3 | Push branch + push `v0.2.0` tag + formal GitHub Release | Medium |
-| 4 | Multi-signer pay path in Trident fuzz | Stretch |
-| 5 | Approach B transfer-hook remaining_accounts forward | Stretch |
-| 6 | Nightly fuzz regression seed archive | Stretch |
-| 7 | AEON-IQ read-only index notes · Nexus capability gate notes | Stretch |
-| 8 | Optional `@aeon/agent-sdk` npm publish · Mainnet + formal audit | Stretch |
+| 2 | Bond vault ATA initialization fix (`docs/PHASE2_BOND_VAULT_FIX.md`) — callers must currently pre-create the vault ATA | **High** |
+| 3 | Upgrade Trident harness to v0.2 `issue_authority` ABI + flows for receipt/pause/expiry/slash | **High** |
+| 4 | Push branch + push `v0.2.0` tag + formal GitHub Release | Medium |
+| 5 | Multi-signer pay path in Trident fuzz | Stretch |
+| 6 | Approach B transfer-hook remaining_accounts forward | Stretch |
+| 7 | Nightly fuzz regression seed archive | Stretch |
+| 8 | AEON-IQ read-only index notes · Nexus capability gate notes | Stretch |
+| 9 | Optional `@aeon/agent-sdk` npm publish · Mainnet + formal audit | Stretch |
 
 ---
 
