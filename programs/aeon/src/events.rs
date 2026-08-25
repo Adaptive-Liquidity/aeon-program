@@ -105,3 +105,37 @@ pub struct OrgResidualReclaimed {
     pub amount: u64,
     pub destination: Pubkey,
 }
+
+#[event]
+pub struct ReceiptCreated {
+    pub receipt_id: u64,
+    pub actor: Pubkey,
+    pub receipt_type: u8,
+    pub prev_hash: [u8; 32],
+    pub hash: [u8; 32],
+    pub slot: u64,
+}
+
+#[event]
+pub struct ConfigPaused {
+    pub admin: Pubkey,
+}
+
+#[event]
+pub struct ConfigUnpaused {
+    pub admin: Pubkey,
+}
+
+#[event]
+pub struct AuthorityExpired {
+    pub authority_id: u64,
+    pub agent: Pubkey,
+    pub expired_slot: u64,
+}
+
+#[event]
+pub struct BondSlashed {
+    pub authority_id: u64,
+    pub amount: u64,
+    pub slasher: Pubkey,
+}

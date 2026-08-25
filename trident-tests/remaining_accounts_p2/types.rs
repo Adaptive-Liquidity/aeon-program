@@ -26,7 +26,7 @@ pub mod aeon {
 
     /// Returns the program ID for aeon
     pub fn program_id() -> Pubkey {
-        pubkey!("8i5E3R2to4R57TEPFs5DmxhDMAUUvWcXjFZup6MnCMEn")
+        pubkey!("TcZ9MKNw4eGvoe3K75e4M3zCwZCzEsb6WvrS8LqNgdm")
     }
 
     // ------------------------------------------------------------------------

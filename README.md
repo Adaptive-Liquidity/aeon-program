@@ -7,7 +7,7 @@ Not a yield product. Not emissions or APY. Enforcement-first primitives for auto
 | | |
 |--|--|
 | **Program** | Anchor 0.30.1 · 16 instructions |
-| **Program ID** | `8i5E3R2to4R57TEPFs5DmxhDMAUUvWcXjFZup6MnCMEn` |
+| **Program ID** | `TcZ9MKNw4eGvoe3K75e4M3zCwZCzEsb6WvrS8LqNgdm` |
 | **Client** | TypeScript Agent SDK → [`client/`](client/) · [`examples/`](client/examples/) |
 | **Live** | [Devnet](docs/DEVNET.md) |
 | **CI** | [docs/CI.md](docs/CI.md) · push/PR + nightly fuzz |
@@ -54,11 +54,11 @@ Safety evidence: [docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md) · [docs/stoa/
 
 | Field | Value |
 |-------|--------|
-| **Program ID** | `8i5E3R2to4R57TEPFs5DmxhDMAUUvWcXjFZup6MnCMEn` |
-| **Config** | `JCbqqJxxCzYzfs1YK3FDD5ZvW66ZbMNq82u3gto1Pmok` |
-| **Mint** | `CBVW7hZ14AUkZM2AUYs44J83GgzyY891ugknDSbQJpTz` |
+| **Program ID** | `TcZ9MKNw4eGvoe3K75e4M3zCwZCzEsb6WvrS8LqNgdm` |
+| **Config** | `3oFvpSfXS6A4Bpotor2cqbcpwyhbeXPiaAXBnDExkPmp` |
+| **Mint** | `DaXLutwYNUJNsHRSwhYLefWgWFfDqm5J5g2vp4xhEVrS` |
 | Cluster | `https://api.devnet.solana.com` |
-| Explorer | [program](https://explorer.solana.com/address/8i5E3R2to4R57TEPFs5DmxhDMAUUvWcXjFZup6MnCMEn?cluster=devnet) |
+| Explorer | [program](https://explorer.solana.com/address/TcZ9MKNw4eGvoe3K75e4M3zCwZCzEsb6WvrS8LqNgdm?cluster=devnet) |
 
 ---
 

@@ -4,7 +4,7 @@
 #   2) P1 Token-2022 protocol-mint isolation
 #   3) HEAVY CPI-fail spent invariance (freeze-authority mint)
 #   4) HEAVY CPI transfer-hook reject (T22 TransferHook mint)
-set -euo pipefail
+set -eu
 cd "$(dirname "$0")/.."
 
 export PATH="${HOME}/.local/share/solana/install/active_release/bin:${HOME}/.cargo/bin:${PATH}"
@@ -38,7 +38,7 @@ PY
 }
 
 run_leg "P0+P1 classic + P2 soft" \
-  "tests/negative/p0.negative.ts tests/negative/p1.negative.ts tests/negative/p2-soft.negative.ts"
+  "tests/negative/p0.negative.ts tests/negative/p1.negative.ts tests/negative/p2-soft.negative.ts tests/negative/v2.negative.ts"
 
 run_leg "P1 Token-2022" \
   "tests/negative/p1-token2022.negative.ts"

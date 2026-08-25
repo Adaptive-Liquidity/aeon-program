@@ -80,4 +80,18 @@ pub enum AeonError {
     ShareBpsExceedsMax,
     #[msg("Organization is not closed")]
     OrgNotClosed,
+    #[msg("Invalid payload")]
+    InvalidPayload,
+    #[msg("Receipt ID mismatch")]
+    ReceiptIdMismatch,
+    #[msg("Receipt chain mismatch")]
+    ReceiptChainMismatch,
+    #[msg("Insufficient bond amount")]
+    InsufficientBond,
+    #[msg("Authority bond not active")]
+    BondNotActive,
+    #[msg("Authority bond not slashed")]
+    AuthorityNotSlashed,
+    #[msg("Authority has not expired")]
+    AuthorityNotExpired,
 }

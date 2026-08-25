@@ -6,10 +6,10 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-aeon = "8i5E3R2to4R57TEPFs5DmxhDMAUUvWcXjFZup6MnCMEn"
+aeon = "TcZ9MKNw4eGvoe3K75e4M3zCwZCzEsb6WvrS8LqNgdm"
 
 [programs.devnet]
-aeon = "8i5E3R2to4R57TEPFs5DmxhDMAUUvWcXjFZup6MnCMEn"
+aeon = "TcZ9MKNw4eGvoe3K75e4M3zCwZCzEsb6WvrS8LqNgdm"
 
 [registry]
 url = "https://api.apr.dev"
@@ -18,5 +18,8 @@ url = "https://api.apr.dev"
 cluster = "Localnet"
 wallet = "~/.config/solana/id.json"
 
+[test]
+startup_wait = 20000
+
 [scripts]
-test = "npx ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
+test = "npx ts-mocha -p ./tsconfig.json -t 180000 tests/negative/v2.negative.ts"

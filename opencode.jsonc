@@ -1,0 +1,31 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "extends": "global",
+  "scripts": {
+    "build": "npm run build:sbf",
+    "test": "npm run test:e2e && npm run test:negative && npm run test:fuzz:p2",
+    "test:sdk": "npm run test:sdk && npm run typecheck:sdk",
+    "deploy": "npm run deploy:devnet",
+    "smoke": "npm run smoke:devnet",
+    "demo": "npm run demo:devnet",
+    "lint": "npm run lint",
+    "typecheck": "npm run typecheck:sdk",
+    "fmt": "cargo fmt --check -p aeon && npm run lint:fix"
+  },
+  "hooks": {
+    "pre-commit": [
+      "npm run lint",
+      "npm run typecheck:sdk",
+      "cargo fmt --check -p aeon"
+    ],
+    "pre-push": [
+      "cargo check -p aeon",
+      "npm run test:sdk",
+      "verify-change"
+    ],
+    "onEdit": {
+      "programs/**/*.rs": "security-review --invariants H1-H7",
+      "client/**/*.ts": "verify-quality --scope sdk"
+    }
+  }
+}

@@ -102,6 +102,61 @@ Approach A: mint has TransferHook extension; AEON does not forward remaining_acc
 
 Harness: `trident-tests/remaining_accounts_p2` · docs: [TRIDENT_P2.md](./TRIDENT_P2.md)
 
+---
+
+## v0.2 — new instruction test surface (PENDING)
+
+These cover the 4 new v0.2 instructions. **Status: TODO** — to be implemented in
+BUILD_PLAN Phase 5. Do not claim v0.2 safety coverage until these land.
+
+### RCPT (create_receipt)
+
+| ID | Pri | Expect | Status |
+|----|-----|--------|--------|
+| NEG-RCPT-001 | P0 | empty payload → InvalidPayload | **TODO** |
+| NEG-RCPT-002 | P0 | payload > 1024 → InvalidPayload | **TODO** |
+| NEG-RCPT-003 | P0 | receipt_id mismatch → ReceiptIdMismatch | **TODO** |
+| NEG-RCPT-004 | P0 | tampered prev_hash → ReceiptChainMismatch | **TODO** |
+| NEG-RCPT-005 | P0 | paused → Paused | **TODO** |
+
+### CFG (set_paused)
+
+| ID | Pri | Expect | Status |
+|----|-----|--------|--------|
+| NEG-CFG-001 | P0 | non-admin set_paused → Unauthorized | **TODO** |
+| NEG-CFG-002 | P0 | paused blocks pay | **TODO** |
+| NEG-CFG-003 | P0 | paused blocks issue_authority | **TODO** |
+| NEG-CFG-004 | P0 | paused blocks register_agent | **TODO** |
+| NEG-CFG-005 | P0 | paused blocks create_receipt | **TODO** |
+
+### AUTH expiry (expire_authority)
+
+| ID | Pri | Expect | Status |
+|----|-----|--------|--------|
+| NEG-AUTH-012 | P0 | not-yet-expired → AuthorityNotExpired | **TODO** |
+| NEG-AUTH-013 | P0 | expiry_slot=0 (never) → AuthorityNotExpired | **TODO** |
+| NEG-AUTH-014 | P0 | non-owner expire → Unauthorized | **TODO** |
+| NEG-AUTH-015 | P0 | already-expired → AuthorityNotActive | **TODO** |
+| NEG-AUTH-016 | P1 | child/escrow orphan safety (no account close) | **TODO** |
+
+### BOND (slash_bond)
+
+| ID | Pri | Expect | Status |
+|----|-----|--------|--------|
+| NEG-BOND-001 | P0 | zero bond slash → InsufficientBond | **TODO** |
+| NEG-BOND-002 | P0 | non-owner slash → Unauthorized | **TODO** |
+| NEG-BOND-003 | P0 | double slash → AuthorityNotSlashed | **TODO** |
+| NEG-BOND-004 | P0 | insufficient bond → InsufficientBond | **TODO** |
+| NEG-BOND-005 | P1 | wrong destination mint → InvalidMint | **TODO** |
+
+### MIG (devnet migration — only if needed)
+
+| ID | Pri | Expect | Status |
+|----|-----|--------|--------|
+| NEG-MIG-001 | P1 | old Authority/Cri layout reads | **N/A** (devnet wiped) |
+
+---
+
 ## Counts
 
 | Status | Count |
@@ -111,6 +166,7 @@ Harness: `trident-tests/remaining_accounts_p2` · docs: [TRIDENT_P2.md](./TRIDEN
 | **PASS** (P2 fuzz targets) | **5** |
 | SKIP | 2 |
 | TODO P2 | **0** |
+| **TODO (v0.2 new)** | **21** |
 
 ## Implementation notes
 
@@ -120,3 +176,4 @@ Harness: `trident-tests/remaining_accounts_p2` · docs: [TRIDENT_P2.md](./TRIDEN
 4. **CPI spent (hook):** TransferHook mint + no remaining_accounts on AEON CPI. Same fail-closed oracle.
 5. **Soft dual-child overissue:** `issue_authority` does not reserve `parent.spent`; documented v0.1 product model (`tests/negative/p2-soft.negative.ts`).
 6. **Trident:** run from `trident-tests/` (`npm run test:fuzz:p2`). Single-signer SVM limits multi-agent pay success paths.
+7. **v0.2 new instructions:** test surface pending (BUILD_PLAN Phase 5). See `docs/PHASE2_BOND_VAULT_FIX.md` for the bond-vault correctness fix that must land before NEG-BOND-*.

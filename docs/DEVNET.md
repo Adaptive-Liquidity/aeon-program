@@ -1,44 +1,70 @@
 # AEON Devnet Deploy
 
-## Live deployment
+## Live deployment (v0.2)
 
 | Field | Value |
 |-------|--------|
-| **Program ID** | `8i5E3R2to4R57TEPFs5DmxhDMAUUvWcXjFZup6MnCMEn` |
+| **Program ID** | `TcZ9MKNw4eGvoe3K75e4M3zCwZCzEsb6WvrS8LqNgdm` |
 | **Cluster** | `https://api.devnet.solana.com` |
-| **Upgrade authority** | `8XWzMqaQQzcXVSS5Q52D3vTnx6VgVBua8bJ273mYrP1F` |
-| **ProgramData** | `9zax6S7GK2G8kTCjRaZcn8y4XE3vjdfU3mgQeA3c4W4r` |
-| **Data length** | 560792 bytes |
-| **Explorer** | https://explorer.solana.com/address/8i5E3R2to4R57TEPFs5DmxhDMAUUvWcXjFZup6MnCMEn?cluster=devnet |
+| **Upgrade authority** | `4bpiP5ddQhEbYxtJJL1qTecvMzzqw38NafoqfUF6R6CY` (Windows CLI wallet `C:\Users\Benna\.config\solana\id.json`) |
+| **ProgramData** | `HeoQJtZRv3MYBGnEjzzAnhxLq34ALPkZJb2UkHRNp6JP` |
+| **Data length** | 690200 bytes |
+| **Explorer** | https://explorer.solana.com/address/TcZ9MKNw4eGvoe3K75e4M3zCwZCzEsb6WvrS8LqNgdm?cluster=devnet |
 | **Deploy artifact** | `target/devnet/deployment.json` |
 | **Smoke artifact** | `target/devnet/smoke.json` |
+| **v0.2 smoke artifact** | `target/devnet/smoke-v02.json` |
 | **Extended demo artifact** | `target/devnet/demo-escrow-org.json` |
 
-Deploy tx (initial): `4xQcNLM2MQtRHnooZRjr7dEVR1SPXtDDjLLhbt3sAGrkuvF3gsq9eMjhfAAPBFtV4sdsqSWGkg39FojrYAuP1FsZ`
+Deploy tx (v0.2, 2026-08-23): `2r3FfJAwxgS1xww1MH8jiMpioU5gedox7u2BRoU6n4dVwLxvFXytFY5oPUngpCvmY3cLFmQX7Shnip1qHYJX823U`
 
-## Smoke-initialized protocol state
+### History: old program ID (locked)
+
+The original v0.1 devnet deployment at `8i5E3R2to4R57TEPFs5DmxhDMAUUvWcXjFZup6MnCMEn` is
+**abandoned** — its upgrade-authority wallet (`8XWzMqaQQzcXVSS5Q52D3vTnx6VgVBua8bJ273mYrP1F`)
+was lost. The old program cannot be upgraded or admin-controlled. The v0.2
+deployment above uses a new program ID and a fresh config/mint/PDAs, and its
+upgrade authority is a wallet under our control.
+
+## Smoke-initialized protocol state (v0.2)
 
 | Account | Address / value |
 |---------|-----------------|
-| **Config PDA** | `JCbqqJxxCzYzfs1YK3FDD5ZvW66ZbMNq82u3gto1Pmok` |
-| **AEON mint** | `CBVW7hZ14AUkZM2AUYs44J83GgzyY891ugknDSbQJpTz` |
-| **Admin** | `8XWzMqaQQzcXVSS5Q52D3vTnx6VgVBua8bJ273mYrP1F` |
-| **Authority** | `#1` (budget 100, spent 10 after smoke pay) |
-| **Pay tx** | [explorer](https://explorer.solana.com/tx/61oymSSi495ESUvgHnH6KE6rNyANnsMM41Yxr5v9bpDvQyKDWPyNd8D5UJzMFqku3TwREWq1QT2wjyLo4Cuo3GzQ?cluster=devnet) |
+| **Config PDA** | `3oFvpSfXS6A4Bpotor2cqbcpwyhbeXPiaAXBnDExkPmp` |
+| **AEON mint** | `DaXLutwYNUJNsHRSwhYLefWgWFfDqm5J5g2vp4xhEVrS` |
+| **Admin** | `4bpiP5ddQhEbYxtJJL1qTecvMzzqw38NafoqfUF6R6CY` |
+| **Receipt counter** | 9 (receipts #1–#9 chained) |
+| **Authorities** | #1 (v0.1 smoke pay), #2–#6 (v0.2 smoke), #6 bond slashed |
+| **Pay tx** | [explorer](https://explorer.solana.com/tx/5y6UGJMUyN4bFVLxriWMiP9gPJVZs8qM6XcbZ5tLa47s38wP9kyxvc2jnEwc6eApj5GZWkhmqNY53BFFuLMue7Sz?cluster=devnet) |
 
-Path verified (smoke): mint → `initialize_config` → `register_agent` ×2 → `issue_authority` → `pay`.
+### v0.1 path verified (smoke)
+
+mint → `initialize_config` → `register_agent` ×2 → `issue_authority` → `pay`.
 
 ```bash
 npm run smoke:devnet   # re-runnable; reuses config if present
 ```
 
+### v0.2 path verified (v0.2 smoke)
+
+```text
+create_receipt #8 → #9           (CRI chain: #9.prev_hash == #8.hash)
+set_paused(true)  → pay blocked with Paused
+set_paused(false) → pay succeeds
+issue_authority (bond 50)        (AuthorityBond ACTIVE, vault funded)
+slash_bond                        (bond SLASHED, 50 AEON → destination)
+```
+
+```bash
+node -r ts-node/register/transpile-only scripts/devnet-smoke-v02.ts
+```
+
 ## Extended demo (escrow → org → dissolve)
 
-**Runner:** `npm run demo:devnet`  
-**Artifact:** `target/devnet/demo-escrow-org.json`  
-**Last run:** 2026-08-09 (authority `#2`, escrow `#1` RELEASED + `#2` CANCELLED, org `#1` CLOSED)
+**Runner:** `npm run demo:devnet`
+**Artifact:** `target/devnet/demo-escrow-org.json`
+**Last run:** 2026-08-09 (against the old, abandoned program ID — rerun against the new ID when needed)
 
-Verified path on public devnet:
+Verified path on public devnet (v0.1 surface, unchanged in v0.2):
 
 ```text
 config (reuse) → register A/B/C → issue_authority
@@ -49,17 +75,6 @@ config (reuse) → register A/B/C → issue_authority
   → dissolve_org → reclaim_org_residual
 ```
 
-| Step | Result (sample run) |
-|------|---------------------|
-| Escrow release | 25 AEON → C, status=RELEASED, authority spent += 25 |
-| Escrow cancel | 10 AEON net-zero, status=CANCELLED |
-| Org shares | A 5000 / B 3500 / C 1500 bps |
-| Deposit / split | 100 in, 20 → B, treasury 80 |
-| Dissolve | A+40, B+28, residual 12 (C share) |
-| Reclaim | residual → A, treasury 0, status=CLOSED |
-
-Example dissolve tx: [explorer](https://explorer.solana.com/tx/4GCWMq7LbUwEDojzadsbexVWGduBmnnfb47Co94AUaEBdbN3gVzP3fm44KonFQsocCFhtXdgCFujCuKSd1ZH2bp?cluster=devnet)
-
 Requires admin wallet ≥ ~0.4 SOL + mint authority (CLI wallet default `~/.config/solana/id.json`).
 
 ## Upgrade
@@ -67,8 +82,12 @@ Requires admin wallet ≥ ~0.4 SOL + mint authority (CLI wallet default `~/.conf
 ```bash
 cd aeon-program
 npm run build:sbf
-npm run deploy:devnet
+SOLANA_WALLET=/mnt/c/Users/Benna/.config/solana/id.json npm run deploy:devnet
 ```
+
+> **Keep the upgrade-authority wallet backed up.** It is
+> `C:\Users\Benna\.config\solana\id.json` (pubkey `4bpiP5dd…`). Losing it locks
+> this deployment exactly like the old `8XWzMqa…` wallet locked the v0.1 one.
 
 ## Client usage
 

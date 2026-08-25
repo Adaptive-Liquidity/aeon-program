@@ -1,7 +1,7 @@
 /**
  * AEON TypeScript Agent SDK — high-level client over the Anchor program.
  *
- * Covers all 16 instructions with PDA wiring, next-id helpers, and typed params.
+ * Covers all 20 instructions with PDA wiring, next-id helpers, and typed params.
  */
 
 import { Program, AnchorProvider, BN, Idl } from "@coral-xyz/anchor";
@@ -11,7 +11,11 @@ import {
   SYSVAR_RENT_PUBKEY,
   TransactionSignature,
 } from "@solana/web3.js";
-import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import {
+  TOKEN_PROGRAM_ID,
+  ASSOCIATED_TOKEN_PROGRAM_ID,
+  getAssociatedTokenAddressSync,
+} from "@solana/spl-token";
 import {
   AEON_PROGRAM_ID,
   CONDITION,
@@ -23,12 +27,17 @@ import type {
   AgentIdentityAccount,
   CriAccount,
   AuthorityAccount,
+  AuthorityBondAccount,
+  ReceiptAccount,
   EscrowAccount,
   OrganizationAccount,
   OrgMemberAccount,
   IssueAuthorityParams,
   PayParams,
   CreateEscrowParams,
+  CreateReceiptParams,
+  ExpireAuthorityParams,
+  SlashBondParams,
   CreateOrgParams,
   OrgSplitParams,
   DissolveOrgParams,
@@ -150,6 +159,9 @@ export class AeonClient {
   authorityAddress(id: number | BN): PublicKey {
     return pdas.authority(id, this.programId);
   }
+  authorityBondAddress(id: number | BN): PublicKey {
+    return pdas.authorityBond(id, this.programId);
+  }
   escrowAddress(id: number | BN): PublicKey {
     return pdas.escrow(id, this.programId);
   }
@@ -164,6 +176,9 @@ export class AeonClient {
   }
   orgMemberAddress(orgId: number | BN, agent: PublicKey): PublicKey {
     return pdas.orgMember(orgId, agent, this.programId);
+  }
+  receiptAddress(id: number | BN): PublicKey {
+    return pdas.receipt(id, this.programId);
   }
 
   // ─── Fetches ───────────────────────────────────────────────────────────────
@@ -186,6 +201,14 @@ export class AeonClient {
     return this.accounts.authority.fetch(this.authorityAddress(id));
   }
 
+  async fetchAuthorityBond(id: number | BN): Promise<AuthorityBondAccount> {
+    return this.accounts.authorityBond.fetch(this.authorityBondAddress(id));
+  }
+
+  async fetchReceipt(id: number | BN): Promise<ReceiptAccount> {
+    return this.accounts.receipt.fetch(this.receiptAddress(id));
+  }
+
   async fetchEscrow(id: number | BN): Promise<EscrowAccount> {
     return this.accounts.escrow.fetch(this.escrowAddress(id));
   }
@@ -205,12 +228,14 @@ export class AeonClient {
     authorityId: number;
     escrowId: number;
     orgId: number;
+    receiptId: number;
   }> {
     const cfg = await this.fetchConfig();
     return {
       authorityId: cfg.authorityCounter.toNumber() + 1,
       escrowId: cfg.escrowCounter.toNumber() + 1,
       orgId: cfg.orgCounter.toNumber() + 1,
+      receiptId: cfg.receiptCounter.toNumber() + 1,
     };
   }
 
@@ -270,9 +295,53 @@ export class AeonClient {
     const maxTotal = toBn(params.maxTotal, budget.toNumber());
     const categories = params.categories ?? [];
     const expirySlot = toBn(params.expirySlot, 0);
+    const bondAmount = toBn(params.bondAmount, 0);
+    const tokenProgram = params.tokenProgram ?? this.tokenProgram;
 
     const parentAuthority =
-      parentId.toNumber() === 0 ? null : this.authorityAddress(parentId);
+      params.parentAuthority !== undefined
+        ? params.parentAuthority
+        : parentId.toNumber() === 0
+        ? null
+        : this.authorityAddress(parentId);
+
+    const hasBond = bondAmount.toNumber() > 0;
+    const aeonMint = params.aeonMint ?? (await this.mintAddress());
+
+    // Optional bond accounts — always present in the accounts object (null when
+    // no bond) so Anchor's client doesn't throw "Account X not provided".
+    let bond: PublicKey | null = null;
+    let agentVault: PublicKey | null = null;
+    let bondVault: PublicKey | null = null;
+    let mintAcct: PublicKey | null = null;
+    let tokenProg: PublicKey | null = null;
+    let ataProg: PublicKey | null = null;
+
+    if (hasBond) {
+      bond = this.authorityBondAddress(id);
+      agentVault = params.agentVault ?? null;
+      bondVault =
+        params.bondVault ??
+        getAssociatedTokenAddressSync(aeonMint, bond, true, tokenProgram);
+      mintAcct = aeonMint;
+      tokenProg = tokenProgram;
+      ataProg = ASSOCIATED_TOKEN_PROGRAM_ID;
+    }
+
+    const accounts: AnyAccounts = {
+      agent: this.walletPubkey,
+      config: this.configAddress(),
+      agentIdentity: this.agentAddress(),
+      parentAuthority,
+      authority: this.authorityAddress(id),
+      bond,
+      agentVault,
+      bondVault,
+      aeonMint: mintAcct,
+      tokenProgram: tokenProg,
+      associatedTokenProgram: ataProg,
+      systemProgram: SystemProgram.programId,
+    };
 
     const sig = await this.methods
       .issueAuthority(
@@ -282,16 +351,10 @@ export class AeonClient {
         maxTotal,
         categories,
         parentId,
-        expirySlot
+        expirySlot,
+        bondAmount
       )
-      .accounts({
-        agent: this.walletPubkey,
-        config: this.configAddress(),
-        agentIdentity: this.agentAddress(),
-        parentAuthority,
-        authority: this.authorityAddress(id),
-        systemProgram: SystemProgram.programId,
-      } as AnyAccounts)
+      .accounts(accounts)
       .signers(opts.signers ?? [])
       .rpc({ skipPreflight: opts.skipPreflight });
 
@@ -597,7 +660,6 @@ export class AeonClient {
     opts: TxOpts = {}
   ): Promise<TransactionSignature> {
     const tokenProgram = params.tokenProgram ?? this.tokenProgram;
-    // memberB is agent pubkey → resolve OrgMember PDA
     const memberBAccount = params.memberB
       ? this.orgMemberAddress(params.orgId, params.memberB)
       : null;
@@ -635,6 +697,83 @@ export class AeonClient {
         aeonMint: await this.mintAddress(),
         tokenProgram,
       })
+      .signers(opts.signers ?? [])
+      .rpc({ skipPreflight: opts.skipPreflight });
+  }
+
+  // ─── v0.2 instructions ─────────────────────────────────────────────────────
+
+  async createReceipt(
+    params: CreateReceiptParams,
+    opts: TxOpts = {}
+  ): Promise<{ receiptId: number; signature: TransactionSignature }> {
+    let receiptId = params.receiptId;
+    if (receiptId === undefined) {
+      receiptId = (await this.nextIds()).receiptId;
+    }
+    const id = toBn(receiptId);
+    const sig = await this.methods
+      .createReceipt(id, params.receiptType, params.payload as any)
+      .accounts({
+        actor: this.walletPubkey,
+        config: this.configAddress(),
+        cri: this.criAddress(this.walletPubkey),
+        receipt: this.receiptAddress(id),
+        systemProgram: SystemProgram.programId,
+      })
+      .signers(opts.signers ?? [])
+      .rpc({ skipPreflight: opts.skipPreflight });
+    return { receiptId: id.toNumber(), signature: sig };
+  }
+
+  async expireAuthority(
+    params: ExpireAuthorityParams,
+    opts: TxOpts = {}
+  ): Promise<TransactionSignature> {
+    const agent = params.agent ?? this.walletPubkey;
+    return this.methods
+      .expireAuthority(toBn(params.authorityId))
+      .accounts({
+        agent,
+        authority: this.authorityAddress(params.authorityId),
+      })
+      .signers(opts.signers ?? [])
+      .rpc({ skipPreflight: opts.skipPreflight });
+  }
+
+  async setPaused(
+    paused: boolean,
+    opts: TxOpts = {}
+  ): Promise<TransactionSignature> {
+    return this.methods
+      .setPaused(paused)
+      .accounts({
+        admin: this.walletPubkey,
+        config: this.configAddress(),
+      })
+      .signers(opts.signers ?? [])
+      .rpc({ skipPreflight: opts.skipPreflight });
+  }
+
+  async slashBond(
+    params: SlashBondParams,
+    opts: TxOpts = {}
+  ): Promise<TransactionSignature> {
+    const tokenProgram = params.tokenProgram ?? this.tokenProgram;
+    const aeonMint = params.aeonMint ?? (await this.mintAddress());
+    const authorityId = toBn(params.authorityId);
+    return this.methods
+      .slashBond(authorityId)
+      .accounts({
+        slasher: params.slasher ?? this.walletPubkey,
+        config: this.configAddress(),
+        authority: this.authorityAddress(authorityId),
+        bond: this.authorityBondAddress(authorityId),
+        bondVault: params.bondVault,
+        destination: params.destination,
+        aeonMint,
+        tokenProgram,
+      } as AnyAccounts)
       .signers(opts.signers ?? [])
       .rpc({ skipPreflight: opts.skipPreflight });
   }

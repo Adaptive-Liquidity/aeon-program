@@ -31,6 +31,14 @@ pub const CONDITION_ORACLE: u8 = 2;
 pub const CONDITION_MULTISIG: u8 = 3;
 pub const CONDITION_TIMEOUT: u8 = 4;
 
+/// Receipt types.
+pub const RECEIPT_TYPE_PAY: u8 = 0;
+pub const RECEIPT_TYPE_ATOMIC_SPLIT: u8 = 1;
+
+/// Bond status codes.
+pub const BOND_STATUS_ACTIVE: u8 = 0;
+pub const BOND_STATUS_SLASHED: u8 = 1;
+
 /// Org status codes.
 pub const ORG_STATUS_ACTIVE: u8 = 0;
 pub const ORG_STATUS_DISSOLVING: u8 = 1;
@@ -52,3 +60,6 @@ pub const SEED_ORG: &[u8] = b"org";
 pub const SEED_ORG_TREASURY: &[u8] = b"org_treasury";
 pub const SEED_ORG_MEMBER: &[u8] = b"org_member";
 pub const SEED_RECEIPT: &[u8] = b"receipt";
+pub const SEED_ORACLE_ENTRY: &[u8] = b"oracle_entry";
+pub const SEED_AUTHORITY_BOND: &[u8] = b"authority_bond";
+pub const RECEIPT_DOMAIN_SEPARATOR: &[u8] = b"AEON_RECEIPT_V1";

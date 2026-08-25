@@ -3,7 +3,62 @@
 All notable changes to the AEON Solana program and Agent SDK are documented here.
 
 Format inspired by [Keep a Changelog](https://keepachangelog.com/).  
-Versioning: program + in-repo SDK share the same release cut for v0.1.x.
+Versioning: program + in-repo SDK share the same release cut.
+
+---
+
+## [0.2.0] — unreleased (in progress)
+
+**Status:** Rust implemented; IDL/SDK/tests/docs done; **v0.2 live on devnet (new program ID)**.
+
+### Added — on-chain (4 new instructions, 20 total)
+
+- `create_receipt` — hash-chained provenance receipt, CRI-bound (`prev_hash` read from CRI, program-computed hash, sequence enforced)
+- `expire_authority` — scheduled authority expiry (no account close; preserves child/escrow/CRI anchors)
+- `set_paused` — admin pause/unpause kill switch (emits `ConfigPaused` / `ConfigUnpaused`)
+- `slash_bond` — slash authority bond → destination (fail-closed CPI)
+
+### Added — state
+
+- `Authority.bond_amount: u64`
+- `Cri.last_receipt_hash: [u8; 32]` + `Cri.receipt_count: u64`
+- New account `AuthorityBond` (authority_id, agent, amount, status, bump)
+
+### Added — constants / errors / events
+
+- `SEED_AUTHORITY_BOND`, `RECEIPT_DOMAIN_SEPARATOR`, `RECEIPT_TYPE_*`, `BOND_STATUS_*`
+- Errors: `InvalidPayload`, `ReceiptIdMismatch`, `ReceiptChainMismatch`, `InsufficientBond`, `AuthorityNotSlashed`, `AuthorityNotExpired`
+- Events: `ReceiptCreated`, `ConfigPaused`, `ConfigUnpaused`, `AuthorityExpired`, `BondSlashed`
+
+### Changed
+
+- `issue_authority` now accepts `bond_amount` (9th arg) and optionally creates an `AuthorityBond` + bond vault.
+
+### Program ID (v0.2 — all environments)
+
+```
+TcZ9MKNw4eGvoe3K75e4M3zCwZCzEsb6WvrS8LqNgdm
+```
+
+> The v0.1.0 ID (`8i5E3R2…`) is abandoned: its devnet upgrade-authority wallet was
+> lost. v0.2 redeployed fresh under the new ID (see `docs/DEVNET.md`).
+
+### Devnet (live, v0.2)
+
+| Field | Value |
+|-------|--------|
+| Program | `TcZ9MKNw4eGvoe3K75e4M3zCwZCzEsb6WvrS8LqNgdm` |
+| Upgrade authority | `4bpiP5ddQhEbYxtJJL1qTecvMzzqw38NafoqfUF6R6CY` |
+| Config | `3oFvpSfXS6A4Bpotor2cqbcpwyhbeXPiaAXBnDExkPmp` |
+| Mint | `DaXLutwYNUJNsHRSwhYLefWgWFfDqm5J5g2vp4xhEVrS` |
+| Cluster | `https://api.devnet.solana.com` |
+
+### Verification (2026-08-23)
+
+- Negative e2e: **68 PASS** + Token-2022 **4** + HEAVY freeze **8** + HEAVY hook **3** (`npm run test:negative`)
+- Trident P2 fuzz: **exit 0, 0 panics** (`npm run test:fuzz:p2`)
+- SDK: 6/6 offline unit + `typecheck:sdk` exit 0
+- Devnet smoke v0.2: receipt chain (#8→#9), pause blocks pay, bond issue→slash — **PASS**
 
 ---
 

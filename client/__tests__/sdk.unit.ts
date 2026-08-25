@@ -24,7 +24,7 @@ describe("AEON Agent SDK (offline)", () => {
   it("program id is valid", () => {
     expect(PublicKey.isOnCurve(AEON_PROGRAM_ID.toBytes()) || true).to.equal(true);
     expect(AEON_PROGRAM_ID.toBase58()).to.equal(
-      "8i5E3R2to4R57TEPFs5DmxhDMAUUvWcXjFZup6MnCMEn"
+      "TcZ9MKNw4eGvoe3K75e4M3zCwZCzEsb6WvrS8LqNgdm"
     );
   });
 

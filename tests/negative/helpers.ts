@@ -34,6 +34,7 @@ import {
   ROLE,
   CONDITION,
   AUTH_STATUS,
+  type AeonClientOptions,
 } from "../../client";
 
 export const ONE = 1_000_000;
@@ -414,6 +415,16 @@ export async function issueChild(
     categories: opts.categories ?? [],
   });
   return authorityId;
+}
+
+/** Create an AeonClient for a specific agent keypair. */
+export function createAgentClient(agent: Keypair, baseClient: AeonClient): AeonClient {
+  const provider = new anchor.AnchorProvider(
+    baseClient.provider.connection,
+    new anchor.Wallet(agent),
+    baseClient.provider.opts
+  );
+  return AeonClient.fromWorkspace(baseClient.program, provider, baseClient.tokenProgram);
 }
 
 export {

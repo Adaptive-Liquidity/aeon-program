@@ -57,7 +57,7 @@ Anza’s installer only appends to `~/.profile`. In GitHub Actions:
 [`scripts/ci-prepare-deploy.sh`](../scripts/ci-prepare-deploy.sh):
 
 1. Copies `keys/aeon-keypair.json` → `target/deploy/aeon-keypair.json` (or `AEON_KEYPAIR_JSON` env)
-2. Asserts pubkey = `8i5E3R2to4R57TEPFs5DmxhDMAUUvWcXjFZup6MnCMEn`
+2. Asserts pubkey = `TcZ9MKNw4eGvoe3K75e4M3zCwZCzEsb6WvrS8LqNgdm`
 3. Builds `.so` if missing
 4. Asserts committed IDL address matches
 

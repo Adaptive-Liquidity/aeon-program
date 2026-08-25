@@ -6,7 +6,7 @@ Covers all 16 instructions, PDA helpers, category encoding, and multi-level revo
 | | |
 |--|--|
 | Import | `import { … } from "./client"` (in-repo) |
-| Program ID | `8i5E3R2to4R57TEPFs5DmxhDMAUUvWcXjFZup6MnCMEn` |
+| Program ID | `TcZ9MKNw4eGvoe3K75e4M3zCwZCzEsb6WvrS8LqNgdm` |
 | IDL | [`idl/aeon.json`](./idl/aeon.json) |
 | Examples | [`examples/`](./examples/) |
 | Unit tests | `npm run test:sdk` · `npm run typecheck:sdk` |

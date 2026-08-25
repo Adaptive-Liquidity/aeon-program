@@ -35,7 +35,7 @@ npm run build:sbf
 Program ID (all clusters in this repo):
 
 ```
-8i5E3R2to4R57TEPFs5DmxhDMAUUvWcXjFZup6MnCMEn
+TcZ9MKNw4eGvoe3K75e4M3zCwZCzEsb6WvrS8LqNgdm
 ```
 
 ---
@@ -177,7 +177,7 @@ You do **not** need to redeploy to explore the live program.
 
 | Field | Value |
 |-------|--------|
-| Program | `8i5E3R2to4R57TEPFs5DmxhDMAUUvWcXjFZup6MnCMEn` |
+| Program | `TcZ9MKNw4eGvoe3K75e4M3zCwZCzEsb6WvrS8LqNgdm` |
 | Config | `JCbqqJxxCzYzfs1YK3FDD5ZvW66ZbMNq82u3gto1Pmok` |
 | Mint | `CBVW7hZ14AUkZM2AUYs44J83GgzyY891ugknDSbQJpTz` |
 | RPC | `https://api.devnet.solana.com` |

@@ -6,7 +6,7 @@ import { PublicKey } from "@solana/web3.js";
 
 /** Default program id (matches declare_id! / IDL). */
 export const AEON_PROGRAM_ID = new PublicKey(
-  "8i5E3R2to4R57TEPFs5DmxhDMAUUvWcXjFZup6MnCMEn"
+  "TcZ9MKNw4eGvoe3K75e4M3zCwZCzEsb6WvrS8LqNgdm"
 );
 
 export const MAX_AUTHORITY_DEPTH = 3;
@@ -40,6 +40,18 @@ export const CONDITION = {
   TIMEOUT: 4,
 } as const;
 
+/** Receipt types (v0.2) */
+export const RECEIPT_TYPE = {
+  PAY: 0,
+  ATOMIC_SPLIT: 1,
+} as const;
+
+/** Bond status (v0.2) */
+export const BOND_STATUS = {
+  ACTIVE: 0,
+  SLASHED: 1,
+} as const;
+
 /** Org status */
 export const ORG_STATUS = {
   ACTIVE: 0,
@@ -60,16 +72,20 @@ export const SEEDS = {
   AGENT: "agent",
   CRI: "cri",
   AUTHORITY: "authority",
+  AUTHORITY_BOND: "authority_bond",
   ESCROW: "escrow",
   ESCROW_VAULT: "escrow_vault",
   ORG: "org",
   ORG_TREASURY: "org_treasury",
   ORG_MEMBER: "org_member",
   RECEIPT: "receipt",
+  ORACLE_ENTRY: "oracle_entry",
 } as const;
 
 export type AuthStatus = (typeof AUTH_STATUS)[keyof typeof AUTH_STATUS];
 export type EscrowStatus = (typeof ESCROW_STATUS)[keyof typeof ESCROW_STATUS];
 export type ConditionType = (typeof CONDITION)[keyof typeof CONDITION];
+export type ReceiptType = (typeof RECEIPT_TYPE)[keyof typeof RECEIPT_TYPE];
+export type BondStatus = (typeof BOND_STATUS)[keyof typeof BOND_STATUS];
 export type OrgStatus = (typeof ORG_STATUS)[keyof typeof ORG_STATUS];
 export type Role = (typeof ROLE)[keyof typeof ROLE];

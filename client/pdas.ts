@@ -57,6 +57,16 @@ export function authorityPda(
   );
 }
 
+export function authorityBondPda(
+  authorityId: IdLike,
+  programId: PublicKey = AEON_PROGRAM_ID
+): [PublicKey, number] {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from(SEEDS.AUTHORITY_BOND), u64Le(authorityId)],
+    programId
+  );
+}
+
 export function escrowPda(
   escrowId: IdLike,
   programId: PublicKey = AEON_PROGRAM_ID
@@ -118,6 +128,16 @@ export function receiptPda(
   );
 }
 
+export function oracleEntryPda(
+  escrowId: IdLike,
+  programId: PublicKey = AEON_PROGRAM_ID
+): [PublicKey, number] {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from(SEEDS.ORACLE_ENTRY), u64Le(escrowId)],
+    programId
+  );
+}
+
 /** Convenience: address-only (drop bump). */
 export const pdas = {
   config: (programId?: PublicKey) => configPda(programId)[0],
@@ -126,6 +146,8 @@ export const pdas = {
   cri: (agent: PublicKey, programId?: PublicKey) => criPda(agent, programId)[0],
   authority: (id: IdLike, programId?: PublicKey) =>
     authorityPda(id, programId)[0],
+  authorityBond: (id: IdLike, programId?: PublicKey) =>
+    authorityBondPda(id, programId)[0],
   escrow: (id: IdLike, programId?: PublicKey) => escrowPda(id, programId)[0],
   escrowVault: (id: IdLike, programId?: PublicKey) =>
     escrowVaultPda(id, programId)[0],
@@ -135,4 +157,6 @@ export const pdas = {
   orgMember: (orgId: IdLike, agent: PublicKey, programId?: PublicKey) =>
     orgMemberPda(orgId, agent, programId)[0],
   receipt: (id: IdLike, programId?: PublicKey) => receiptPda(id, programId)[0],
+  oracleEntry: (id: IdLike, programId?: PublicKey) =>
+    oracleEntryPda(id, programId)[0],
 };

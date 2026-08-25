@@ -1,197 +1,23 @@
 {
-  "address": "8i5E3R2to4R57TEPFs5DmxhDMAUUvWcXjFZup6MnCMEn",
+  "address": "TcZ9MKNw4eGvoe3K75e4M3zCwZCzEsb6WvrS8LqNgdm",
   "metadata": {
     "name": "aeon",
     "version": "0.1.0",
-    "spec": "0.1.0"
+    "spec": "0.1.0",
+    "description": "AEON — adaptive economic primitive for autonomous agents"
   },
   "instructions": [
     {
-      "name": "initialize_config",
+      "name": "atomic_split",
       "discriminator": [
-        208,
-        127,
-        21,
-        1,
-        194,
-        190,
-        196,
-        70
-      ],
-      "accounts": [
-        {
-          "name": "admin",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "config",
-          "writable": true
-        },
-        {
-          "name": "system_program"
-        }
-      ],
-      "args": [
-        {
-          "name": "aeon_mint",
-          "type": "pubkey"
-        }
-      ]
-    },
-    {
-      "name": "register_agent",
-      "discriminator": [
-        135,
-        157,
-        66,
-        195,
+        48,
+        8,
+        165,
+        93,
         2,
-        113,
-        175,
-        30
-      ],
-      "accounts": [
-        {
-          "name": "agent",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "config"
-        },
-        {
-          "name": "agent_identity",
-          "writable": true
-        },
-        {
-          "name": "cri",
-          "writable": true
-        },
-        {
-          "name": "system_program"
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "issue_authority",
-      "discriminator": [
-        46,
-        62,
-        161,
-        139,
-        184,
-        96,
-        84,
-        23
-      ],
-      "accounts": [
-        {
-          "name": "agent",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "config",
-          "writable": true
-        },
-        {
-          "name": "agent_identity"
-        },
-        {
-          "name": "parent_authority",
-          "optional": true
-        },
-        {
-          "name": "authority",
-          "writable": true
-        },
-        {
-          "name": "system_program"
-        }
-      ],
-      "args": [
-        {
-          "name": "authority_id",
-          "type": "u64"
-        },
-        {
-          "name": "budget",
-          "type": "u64"
-        },
-        {
-          "name": "max_per_tx",
-          "type": "u64"
-        },
-        {
-          "name": "max_total",
-          "type": "u64"
-        },
-        {
-          "name": "categories",
-          "type": {
-            "vec": {
-              "array": [
-                "u8",
-                16
-              ]
-            }
-          }
-        },
-        {
-          "name": "parent_id",
-          "type": "u64"
-        },
-        {
-          "name": "expiry_slot",
-          "type": "u64"
-        }
-      ]
-    },
-    {
-      "name": "revoke_authority",
-      "discriminator": [
-        233,
-        254,
-        239,
-        15,
-        49,
-        183,
-        105,
-        21
-      ],
-      "accounts": [
-        {
-          "name": "agent",
-          "signer": true
-        },
-        {
-          "name": "config"
-        },
-        {
-          "name": "authority",
-          "writable": true
-        }
-      ],
-      "args": [
-        {
-          "name": "authority_id",
-          "type": "u64"
-        }
-      ]
-    },
-    {
-      "name": "pay",
-      "discriminator": [
-        119,
-        18,
-        216,
-        65,
-        192,
-        117,
-        122,
-        220
+        50,
+        35,
+        231
       ],
       "accounts": [
         {
@@ -199,10 +25,34 @@
           "signer": true
         },
         {
-          "name": "payee"
+          "name": "payee_a"
         },
         {
-          "name": "config"
+          "name": "payee_b",
+          "optional": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  101,
+                  111,
+                  110,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "authority",
@@ -210,20 +60,62 @@
           "optional": true
         },
         {
-          "name": "payer_cri",
-          "writable": true
-        },
-        {
-          "name": "payee_cri",
-          "writable": true
-        },
-        {
           "name": "payer_token",
           "writable": true
         },
         {
-          "name": "payee_token",
+          "name": "payee_a_token",
           "writable": true
+        },
+        {
+          "name": "payee_b_token",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "payer_cri",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  114,
+                  105
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "payer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "payee_a_cri",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  114,
+                  105
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "payee_a"
+              }
+            ]
+          }
+        },
+        {
+          "name": "payee_b_cri",
+          "writable": true,
+          "optional": true
         },
         {
           "name": "aeon_mint"
@@ -234,12 +126,14 @@
       ],
       "args": [
         {
-          "name": "amount",
+          "name": "authority_id",
           "type": "u64"
         },
         {
-          "name": "authority_id",
-          "type": "u64"
+          "name": "amounts",
+          "type": {
+            "vec": "u64"
+          }
         },
         {
           "name": "category",
@@ -249,6 +143,114 @@
               16
             ]
           }
+        }
+      ]
+    },
+    {
+      "name": "cancel_escrow",
+      "discriminator": [
+        156,
+        203,
+        54,
+        179,
+        38,
+        72,
+        33,
+        21
+      ],
+      "accounts": [
+        {
+          "name": "canceller",
+          "signer": true
+        },
+        {
+          "name": "escrow",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "escrow_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "escrow_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "escrow_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "payer_token",
+          "writable": true
+        },
+        {
+          "name": "payer_cri",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  114,
+                  105
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "escrow.payer",
+                "account": "Escrow"
+              }
+            ]
+          }
+        },
+        {
+          "name": "aeon_mint"
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "escrow_id",
+          "type": "u64"
         }
       ]
     },
@@ -275,7 +277,27 @@
         },
         {
           "name": "config",
-          "writable": true
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  101,
+                  111,
+                  110,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
         },
         {
           "name": "authority",
@@ -284,11 +306,55 @@
         },
         {
           "name": "escrow",
-          "writable": true
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "escrow_id"
+              }
+            ]
+          }
         },
         {
           "name": "escrow_vault",
-          "writable": true
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "escrow_id"
+              }
+            ]
+          }
         },
         {
           "name": "payer_token",
@@ -301,10 +367,12 @@
           "name": "token_program"
         },
         {
-          "name": "system_program"
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
         },
         {
-          "name": "rent"
+          "name": "rent",
+          "address": "SysvarRent111111111111111111111111111111111"
         }
       ],
       "args": [
@@ -349,200 +417,6 @@
       ]
     },
     {
-      "name": "release_escrow",
-      "discriminator": [
-        146,
-        253,
-        129,
-        233,
-        20,
-        145,
-        181,
-        206
-      ],
-      "accounts": [
-        {
-          "name": "releaser",
-          "signer": true
-        },
-        {
-          "name": "escrow",
-          "writable": true
-        },
-        {
-          "name": "escrow_vault",
-          "writable": true
-        },
-        {
-          "name": "payee_token",
-          "writable": true
-        },
-        {
-          "name": "payer_cri",
-          "writable": true
-        },
-        {
-          "name": "payee_cri",
-          "writable": true
-        },
-        {
-          "name": "aeon_mint"
-        },
-        {
-          "name": "token_program"
-        }
-      ],
-      "args": [
-        {
-          "name": "escrow_id",
-          "type": "u64"
-        },
-        {
-          "name": "witness",
-          "type": {
-            "array": [
-              "u8",
-              64
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "name": "cancel_escrow",
-      "discriminator": [
-        156,
-        203,
-        54,
-        179,
-        38,
-        72,
-        33,
-        21
-      ],
-      "accounts": [
-        {
-          "name": "canceller",
-          "signer": true
-        },
-        {
-          "name": "escrow",
-          "writable": true
-        },
-        {
-          "name": "escrow_vault",
-          "writable": true
-        },
-        {
-          "name": "payer_token",
-          "writable": true
-        },
-        {
-          "name": "payer_cri",
-          "writable": true
-        },
-        {
-          "name": "aeon_mint"
-        },
-        {
-          "name": "token_program"
-        }
-      ],
-      "args": [
-        {
-          "name": "escrow_id",
-          "type": "u64"
-        }
-      ]
-    },
-    {
-      "name": "atomic_split",
-      "discriminator": [
-        48,
-        8,
-        165,
-        93,
-        2,
-        50,
-        35,
-        231
-      ],
-      "accounts": [
-        {
-          "name": "payer",
-          "signer": true
-        },
-        {
-          "name": "payee_a"
-        },
-        {
-          "name": "payee_b",
-          "optional": true
-        },
-        {
-          "name": "config"
-        },
-        {
-          "name": "authority",
-          "writable": true,
-          "optional": true
-        },
-        {
-          "name": "payer_token",
-          "writable": true
-        },
-        {
-          "name": "payee_a_token",
-          "writable": true
-        },
-        {
-          "name": "payee_b_token",
-          "writable": true,
-          "optional": true
-        },
-        {
-          "name": "payer_cri",
-          "writable": true
-        },
-        {
-          "name": "payee_a_cri",
-          "writable": true
-        },
-        {
-          "name": "payee_b_cri",
-          "writable": true,
-          "optional": true
-        },
-        {
-          "name": "aeon_mint"
-        },
-        {
-          "name": "token_program"
-        }
-      ],
-      "args": [
-        {
-          "name": "authority_id",
-          "type": "u64"
-        },
-        {
-          "name": "amounts",
-          "type": {
-            "vec": "u64"
-          }
-        },
-        {
-          "name": "category",
-          "type": {
-            "array": [
-              "u8",
-              16
-            ]
-          }
-        }
-      ]
-    },
-    {
       "name": "create_org",
       "discriminator": [
         48,
@@ -562,22 +436,128 @@
         },
         {
           "name": "config",
-          "writable": true
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  101,
+                  111,
+                  110,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
         },
         {
-          "name": "creator_identity"
+          "name": "creator_identity",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  103,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "creator"
+              }
+            ]
+          }
         },
         {
           "name": "organization",
-          "writable": true
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "org_id"
+              }
+            ]
+          }
         },
         {
           "name": "org_treasury",
-          "writable": true
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  103,
+                  95,
+                  116,
+                  114,
+                  101,
+                  97,
+                  115,
+                  117,
+                  114,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "org_id"
+              }
+            ]
+          }
         },
         {
           "name": "creator_member",
-          "writable": true
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  103,
+                  95,
+                  109,
+                  101,
+                  109,
+                  98,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "org_id"
+              },
+              {
+                "kind": "account",
+                "path": "creator"
+              }
+            ]
+          }
         },
         {
           "name": "aeon_mint"
@@ -586,10 +566,12 @@
           "name": "token_program"
         },
         {
-          "name": "system_program"
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
         },
         {
-          "name": "rent"
+          "name": "rent",
+          "address": "SysvarRent111111111111111111111111111111111"
         }
       ],
       "args": [
@@ -613,6 +595,112 @@
       ]
     },
     {
+      "name": "create_receipt",
+      "discriminator": [
+        187,
+        57,
+        104,
+        13,
+        15,
+        1,
+        219,
+        99
+      ],
+      "accounts": [
+        {
+          "name": "actor",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  101,
+                  111,
+                  110,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "cri",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  114,
+                  105
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "actor"
+              }
+            ]
+          }
+        },
+        {
+          "name": "receipt",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  99,
+                  101,
+                  105,
+                  112,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "receipt_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "receipt_id",
+          "type": "u64"
+        },
+        {
+          "name": "receipt_type",
+          "type": "u8"
+        },
+        {
+          "name": "payload",
+          "type": "bytes"
+        }
+      ]
+    },
+    {
       "name": "deposit_to_org",
       "discriminator": [
         20,
@@ -631,14 +719,82 @@
         },
         {
           "name": "organization",
-          "writable": true
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "org_id"
+              }
+            ]
+          }
         },
         {
-          "name": "org_member"
+          "name": "org_member",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  103,
+                  95,
+                  109,
+                  101,
+                  109,
+                  98,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "org_id"
+              },
+              {
+                "kind": "account",
+                "path": "member"
+              }
+            ]
+          }
         },
         {
           "name": "org_treasury",
-          "writable": true
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  103,
+                  95,
+                  116,
+                  114,
+                  101,
+                  97,
+                  115,
+                  117,
+                  114,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "org_id"
+              }
+            ]
+          }
         },
         {
           "name": "member_token",
@@ -663,61 +819,6 @@
       ]
     },
     {
-      "name": "org_split",
-      "discriminator": [
-        100,
-        227,
-        62,
-        222,
-        189,
-        106,
-        19,
-        24
-      ],
-      "accounts": [
-        {
-          "name": "admin",
-          "signer": true
-        },
-        {
-          "name": "organization",
-          "writable": true
-        },
-        {
-          "name": "admin_member"
-        },
-        {
-          "name": "recipient_member"
-        },
-        {
-          "name": "recipient_token",
-          "writable": true
-        },
-        {
-          "name": "org_treasury",
-          "writable": true
-        },
-        {
-          "name": "aeon_mint"
-        },
-        {
-          "name": "token_program"
-        }
-      ],
-      "args": [
-        {
-          "name": "org_id",
-          "type": "u64"
-        },
-        {
-          "name": "amounts",
-          "type": {
-            "vec": "u64"
-          }
-        }
-      ]
-    },
-    {
       "name": "dissolve_org",
       "discriminator": [
         143,
@@ -736,10 +837,53 @@
         },
         {
           "name": "organization",
-          "writable": true
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "org_id"
+              }
+            ]
+          }
         },
         {
-          "name": "admin_member"
+          "name": "admin_member",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  103,
+                  95,
+                  109,
+                  101,
+                  109,
+                  98,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "org_id"
+              },
+              {
+                "kind": "account",
+                "path": "admin"
+              }
+            ]
+          }
         },
         {
           "name": "admin_token",
@@ -747,6 +891,9 @@
         },
         {
           "name": "member_b",
+          "docs": [
+            "Optional second member."
+          ],
           "optional": true
         },
         {
@@ -756,7 +903,32 @@
         },
         {
           "name": "org_treasury",
-          "writable": true
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  103,
+                  95,
+                  116,
+                  114,
+                  101,
+                  97,
+                  115,
+                  117,
+                  114,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "org_id"
+              }
+            ]
+          }
         },
         {
           "name": "aeon_mint"
@@ -768,6 +940,315 @@
       "args": [
         {
           "name": "org_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "expire_authority",
+      "discriminator": [
+        52,
+        217,
+        172,
+        26,
+        91,
+        167,
+        12,
+        77
+      ],
+      "accounts": [
+        {
+          "name": "agent",
+          "signer": true
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "authority_id"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "authority_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "initialize_config",
+      "discriminator": [
+        208,
+        127,
+        21,
+        1,
+        194,
+        190,
+        196,
+        70
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  101,
+                  111,
+                  110,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "aeon_mint",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "issue_authority",
+      "discriminator": [
+        46,
+        62,
+        161,
+        139,
+        184,
+        96,
+        84,
+        23
+      ],
+      "accounts": [
+        {
+          "name": "agent",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  101,
+                  111,
+                  110,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "agent_identity",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  103,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "agent"
+              }
+            ]
+          }
+        },
+        {
+          "name": "parent_authority",
+          "docs": [
+            "Parent authority account — pass only when parent_id != 0."
+          ],
+          "optional": true
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "authority_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "bond",
+          "writable": true,
+          "optional": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121,
+                  95,
+                  98,
+                  111,
+                  110,
+                  100
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "authority_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "agent_vault",
+          "docs": [
+            "Agent's token account that funds the bond (source of the transfer)."
+          ],
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "bond_vault",
+          "docs": [
+            "Bond vault = ATA owned by the bond PDA (destination of the transfer)."
+          ],
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "aeon_mint",
+          "optional": true
+        },
+        {
+          "name": "token_program",
+          "optional": true
+        },
+        {
+          "name": "associated_token_program",
+          "optional": true,
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "authority_id",
+          "type": "u64"
+        },
+        {
+          "name": "budget",
+          "type": "u64"
+        },
+        {
+          "name": "max_per_tx",
+          "type": "u64"
+        },
+        {
+          "name": "max_total",
+          "type": "u64"
+        },
+        {
+          "name": "categories",
+          "type": {
+            "vec": {
+              "array": [
+                "u8",
+                16
+              ]
+            }
+          }
+        },
+        {
+          "name": "parent_id",
+          "type": "u64"
+        },
+        {
+          "name": "expiry_slot",
+          "type": "u64"
+        },
+        {
+          "name": "bond_amount",
           "type": "u64"
         }
       ]
@@ -795,20 +1276,109 @@
         },
         {
           "name": "organization",
-          "writable": true
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "org_id"
+              }
+            ]
+          }
         },
         {
-          "name": "admin_member"
+          "name": "admin_member",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  103,
+                  95,
+                  109,
+                  101,
+                  109,
+                  98,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "org_id"
+              },
+              {
+                "kind": "account",
+                "path": "admin"
+              }
+            ]
+          }
         },
         {
-          "name": "agent_identity"
+          "name": "agent_identity",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  103,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "new_agent"
+              }
+            ]
+          }
         },
         {
           "name": "new_member",
-          "writable": true
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  103,
+                  95,
+                  109,
+                  101,
+                  109,
+                  98,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "org_id"
+              },
+              {
+                "kind": "account",
+                "path": "new_agent"
+              }
+            ]
+          }
         },
         {
-          "name": "system_program"
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
         }
       ],
       "args": [
@@ -827,16 +1397,16 @@
       ]
     },
     {
-      "name": "set_member_share",
+      "name": "org_split",
       "discriminator": [
-        201,
-        0,
-        164,
-        254,
+        100,
+        227,
+        62,
+        222,
+        189,
         106,
-        117,
-        223,
-        152
+        19,
+        24
       ],
       "accounts": [
         {
@@ -845,14 +1415,123 @@
         },
         {
           "name": "organization",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "org_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin_member",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  103,
+                  95,
+                  109,
+                  101,
+                  109,
+                  98,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "org_id"
+              },
+              {
+                "kind": "account",
+                "path": "admin"
+              }
+            ]
+          }
+        },
+        {
+          "name": "recipient_member",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  103,
+                  95,
+                  109,
+                  101,
+                  109,
+                  98,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "org_id"
+              },
+              {
+                "kind": "account",
+                "path": "recipient_member.agent",
+                "account": "OrgMember"
+              }
+            ]
+          }
+        },
+        {
+          "name": "recipient_token",
           "writable": true
         },
         {
-          "name": "admin_member"
+          "name": "org_treasury",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  103,
+                  95,
+                  116,
+                  114,
+                  101,
+                  97,
+                  115,
+                  117,
+                  114,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "org_id"
+              }
+            ]
+          }
         },
         {
-          "name": "target_member",
-          "writable": true
+          "name": "aeon_mint"
+        },
+        {
+          "name": "token_program"
         }
       ],
       "args": [
@@ -861,8 +1540,133 @@
           "type": "u64"
         },
         {
-          "name": "new_share_bps",
-          "type": "u16"
+          "name": "amounts",
+          "type": {
+            "vec": "u64"
+          }
+        }
+      ]
+    },
+    {
+      "name": "pay",
+      "discriminator": [
+        119,
+        18,
+        216,
+        65,
+        192,
+        117,
+        122,
+        220
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "signer": true
+        },
+        {
+          "name": "payee"
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  101,
+                  111,
+                  110,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "payer_cri",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  114,
+                  105
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "payer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "payee_cri",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  114,
+                  105
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "payee"
+              }
+            ]
+          }
+        },
+        {
+          "name": "payer_token",
+          "writable": true
+        },
+        {
+          "name": "payee_token",
+          "writable": true
+        },
+        {
+          "name": "aeon_mint"
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "authority_id",
+          "type": "u64"
+        },
+        {
+          "name": "category",
+          "type": {
+            "array": [
+              "u8",
+              16
+            ]
+          }
         }
       ]
     },
@@ -885,14 +1689,82 @@
         },
         {
           "name": "organization",
-          "writable": true
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "org_id"
+              }
+            ]
+          }
         },
         {
-          "name": "authority_member"
+          "name": "authority_member",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  103,
+                  95,
+                  109,
+                  101,
+                  109,
+                  98,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "org_id"
+              },
+              {
+                "kind": "account",
+                "path": "authority"
+              }
+            ]
+          }
         },
         {
           "name": "org_treasury",
-          "writable": true
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  103,
+                  95,
+                  116,
+                  114,
+                  101,
+                  97,
+                  115,
+                  117,
+                  114,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "org_id"
+              }
+            ]
+          }
         },
         {
           "name": "destination",
@@ -911,22 +1783,590 @@
           "type": "u64"
         }
       ]
+    },
+    {
+      "name": "register_agent",
+      "discriminator": [
+        135,
+        157,
+        66,
+        195,
+        2,
+        113,
+        175,
+        30
+      ],
+      "accounts": [
+        {
+          "name": "agent",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  101,
+                  111,
+                  110,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "agent_identity",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  103,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "agent"
+              }
+            ]
+          }
+        },
+        {
+          "name": "cri",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  114,
+                  105
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "agent"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "release_escrow",
+      "discriminator": [
+        146,
+        253,
+        129,
+        233,
+        20,
+        145,
+        181,
+        206
+      ],
+      "accounts": [
+        {
+          "name": "releaser",
+          "signer": true
+        },
+        {
+          "name": "escrow",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "escrow_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "escrow_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "escrow_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "payee_token",
+          "writable": true
+        },
+        {
+          "name": "payer_cri",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  114,
+                  105
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "escrow.payer",
+                "account": "Escrow"
+              }
+            ]
+          }
+        },
+        {
+          "name": "payee_cri",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  114,
+                  105
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "escrow.payee",
+                "account": "Escrow"
+              }
+            ]
+          }
+        },
+        {
+          "name": "aeon_mint"
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "escrow_id",
+          "type": "u64"
+        },
+        {
+          "name": "witness",
+          "type": {
+            "array": [
+              "u8",
+              64
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "revoke_authority",
+      "discriminator": [
+        233,
+        254,
+        239,
+        15,
+        49,
+        183,
+        105,
+        21
+      ],
+      "accounts": [
+        {
+          "name": "agent",
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  101,
+                  111,
+                  110,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "authority_id"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "authority_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "set_member_share",
+      "discriminator": [
+        201,
+        0,
+        164,
+        254,
+        106,
+        117,
+        223,
+        152
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true
+        },
+        {
+          "name": "organization",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "org_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin_member",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  103,
+                  95,
+                  109,
+                  101,
+                  109,
+                  98,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "org_id"
+              },
+              {
+                "kind": "account",
+                "path": "admin"
+              }
+            ]
+          }
+        },
+        {
+          "name": "target_member",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  103,
+                  95,
+                  109,
+                  101,
+                  109,
+                  98,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "org_id"
+              },
+              {
+                "kind": "account",
+                "path": "target_member.agent",
+                "account": "OrgMember"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "org_id",
+          "type": "u64"
+        },
+        {
+          "name": "new_share_bps",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "set_paused",
+      "discriminator": [
+        91,
+        60,
+        125,
+        192,
+        176,
+        225,
+        166,
+        218
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  101,
+                  111,
+                  110,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "paused",
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "slash_bond",
+      "discriminator": [
+        143,
+        246,
+        51,
+        243,
+        88,
+        198,
+        217,
+        48
+      ],
+      "accounts": [
+        {
+          "name": "slasher",
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  101,
+                  111,
+                  110,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "authority_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "bond",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121,
+                  95,
+                  98,
+                  111,
+                  110,
+                  100
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "authority_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "bond_vault",
+          "writable": true
+        },
+        {
+          "name": "destination",
+          "writable": true
+        },
+        {
+          "name": "aeon_mint"
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "authority_id",
+          "type": "u64"
+        }
+      ]
     }
   ],
   "accounts": [
-    {
-      "name": "Config",
-      "discriminator": [
-        155,
-        12,
-        170,
-        224,
-        30,
-        250,
-        204,
-        130
-      ]
-    },
     {
       "name": "AgentIdentity",
       "discriminator": [
@@ -938,19 +2378,6 @@
         76,
         241,
         72
-      ]
-    },
-    {
-      "name": "Cri",
-      "discriminator": [
-        237,
-        181,
-        52,
-        32,
-        235,
-        78,
-        3,
-        186
       ]
     },
     {
@@ -967,6 +2394,45 @@
       ]
     },
     {
+      "name": "AuthorityBond",
+      "discriminator": [
+        230,
+        18,
+        181,
+        219,
+        28,
+        167,
+        194,
+        176
+      ]
+    },
+    {
+      "name": "Config",
+      "discriminator": [
+        155,
+        12,
+        170,
+        224,
+        30,
+        250,
+        204,
+        130
+      ]
+    },
+    {
+      "name": "Cri",
+      "discriminator": [
+        237,
+        181,
+        52,
+        32,
+        235,
+        78,
+        3,
+        186
+      ]
+    },
+    {
       "name": "Escrow",
       "discriminator": [
         31,
@@ -977,6 +2443,19 @@
         22,
         218,
         155
+      ]
+    },
+    {
+      "name": "OrgMember",
+      "discriminator": [
+        18,
+        130,
+        142,
+        45,
+        220,
+        198,
+        3,
+        26
       ]
     },
     {
@@ -993,66 +2472,519 @@
       ]
     },
     {
-      "name": "OrgMember",
+      "name": "Receipt",
       "discriminator": [
-        18,
-        130,
-        142,
-        45,
-        220,
-        198,
-        3,
-        26
+        39,
+        154,
+        73,
+        106,
+        80,
+        102,
+        145,
+        153
       ]
+    }
+  ],
+  "events": [
+    {
+      "name": "AgentRegistered",
+      "discriminator": [
+        191,
+        78,
+        217,
+        54,
+        232,
+        100,
+        189,
+        85
+      ]
+    },
+    {
+      "name": "AuthorityExpired",
+      "discriminator": [
+        204,
+        61,
+        107,
+        147,
+        147,
+        218,
+        180,
+        201
+      ]
+    },
+    {
+      "name": "AuthorityIssued",
+      "discriminator": [
+        171,
+        48,
+        52,
+        15,
+        26,
+        144,
+        160,
+        190
+      ]
+    },
+    {
+      "name": "AuthorityRevoked",
+      "discriminator": [
+        119,
+        225,
+        57,
+        76,
+        236,
+        155,
+        29,
+        34
+      ]
+    },
+    {
+      "name": "BondSlashed",
+      "discriminator": [
+        59,
+        7,
+        252,
+        195,
+        234,
+        156,
+        42,
+        54
+      ]
+    },
+    {
+      "name": "ConfigPaused",
+      "discriminator": [
+        4,
+        247,
+        68,
+        149,
+        112,
+        96,
+        81,
+        253
+      ]
+    },
+    {
+      "name": "ConfigUnpaused",
+      "discriminator": [
+        121,
+        14,
+        146,
+        133,
+        130,
+        127,
+        1,
+        150
+      ]
+    },
+    {
+      "name": "CriUpdated",
+      "discriminator": [
+        7,
+        108,
+        11,
+        185,
+        21,
+        100,
+        22,
+        222
+      ]
+    },
+    {
+      "name": "EscrowCancelled",
+      "discriminator": [
+        98,
+        241,
+        195,
+        122,
+        213,
+        0,
+        162,
+        161
+      ]
+    },
+    {
+      "name": "EscrowCreated",
+      "discriminator": [
+        70,
+        127,
+        105,
+        102,
+        92,
+        97,
+        7,
+        173
+      ]
+    },
+    {
+      "name": "EscrowReleased",
+      "discriminator": [
+        131,
+        7,
+        138,
+        104,
+        166,
+        190,
+        113,
+        112
+      ]
+    },
+    {
+      "name": "MemberJoined",
+      "discriminator": [
+        156,
+        199,
+        149,
+        88,
+        193,
+        203,
+        191,
+        210
+      ]
+    },
+    {
+      "name": "MemberShareUpdated",
+      "discriminator": [
+        124,
+        179,
+        104,
+        60,
+        208,
+        169,
+        222,
+        196
+      ]
+    },
+    {
+      "name": "OrgCreated",
+      "discriminator": [
+        147,
+        145,
+        192,
+        255,
+        185,
+        216,
+        83,
+        7
+      ]
+    },
+    {
+      "name": "OrgDeposited",
+      "discriminator": [
+        255,
+        16,
+        139,
+        3,
+        81,
+        71,
+        194,
+        122
+      ]
+    },
+    {
+      "name": "OrgDissolved",
+      "discriminator": [
+        11,
+        99,
+        196,
+        77,
+        107,
+        89,
+        9,
+        93
+      ]
+    },
+    {
+      "name": "OrgResidualReclaimed",
+      "discriminator": [
+        208,
+        76,
+        176,
+        142,
+        117,
+        66,
+        52,
+        24
+      ]
+    },
+    {
+      "name": "OrgSplitEvent",
+      "discriminator": [
+        37,
+        78,
+        197,
+        1,
+        149,
+        176,
+        29,
+        218
+      ]
+    },
+    {
+      "name": "PaymentSettled",
+      "discriminator": [
+        158,
+        182,
+        152,
+        76,
+        105,
+        23,
+        232,
+        135
+      ]
+    },
+    {
+      "name": "ReceiptCreated",
+      "discriminator": [
+        53,
+        236,
+        206,
+        24,
+        194,
+        10,
+        208,
+        163
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "Paused",
+      "msg": "Protocol is paused"
+    },
+    {
+      "code": 6001,
+      "name": "Unauthorized",
+      "msg": "Unauthorized"
+    },
+    {
+      "code": 6002,
+      "name": "AgentAlreadyRegistered",
+      "msg": "Agent already registered"
+    },
+    {
+      "code": 6003,
+      "name": "AgentNotActive",
+      "msg": "Agent is not active"
+    },
+    {
+      "code": 6004,
+      "name": "InvalidBudget",
+      "msg": "Invalid budget"
+    },
+    {
+      "code": 6005,
+      "name": "MaxDelegationDepth",
+      "msg": "Max delegation depth exceeded"
+    },
+    {
+      "code": 6006,
+      "name": "ParentNotActive",
+      "msg": "Parent authority is not active"
+    },
+    {
+      "code": 6007,
+      "name": "ChildBudgetExceedsParent",
+      "msg": "Child budget exceeds parent remaining"
+    },
+    {
+      "code": 6008,
+      "name": "AuthorityNotActive",
+      "msg": "Authority is not active"
+    },
+    {
+      "code": 6009,
+      "name": "AuthorityExpired",
+      "msg": "Authority has expired"
+    },
+    {
+      "code": 6010,
+      "name": "InvalidCategoryCount",
+      "msg": "Invalid category count (max 8)"
+    },
+    {
+      "code": 6011,
+      "name": "InvalidBlockedCount",
+      "msg": "Invalid blocked recipient count (max 4)"
+    },
+    {
+      "code": 6012,
+      "name": "ParentRequired",
+      "msg": "Parent authority not provided"
+    },
+    {
+      "code": 6013,
+      "name": "ParentIdMismatch",
+      "msg": "Parent authority id mismatch"
+    },
+    {
+      "code": 6014,
+      "name": "Overflow",
+      "msg": "Arithmetic overflow"
+    },
+    {
+      "code": 6015,
+      "name": "InvalidAmount",
+      "msg": "Invalid amount"
+    },
+    {
+      "code": 6016,
+      "name": "ExceedsMaxPerTx",
+      "msg": "Exceeds max per transaction"
+    },
+    {
+      "code": 6017,
+      "name": "ExceedsMaxTotal",
+      "msg": "Exceeds max total"
+    },
+    {
+      "code": 6018,
+      "name": "InsufficientBudget",
+      "msg": "Insufficient authority budget"
+    },
+    {
+      "code": 6019,
+      "name": "CategoryNotAllowed",
+      "msg": "Category not allowed"
+    },
+    {
+      "code": 6020,
+      "name": "RecipientBlocked",
+      "msg": "Recipient is blocked"
+    },
+    {
+      "code": 6021,
+      "name": "AuthorityRequired",
+      "msg": "Authority required for this spend"
+    },
+    {
+      "code": 6022,
+      "name": "AuthorityAgentMismatch",
+      "msg": "Authority agent mismatch"
+    },
+    {
+      "code": 6023,
+      "name": "EmptyCategoryIntersection",
+      "msg": "Category intersection empty under parent policy"
+    },
+    {
+      "code": 6024,
+      "name": "InvalidMint",
+      "msg": "Invalid mint"
+    },
+    {
+      "code": 6025,
+      "name": "TokenTransferFailed",
+      "msg": "Token transfer failed"
+    },
+    {
+      "code": 6026,
+      "name": "AuthorityAlreadyRevoked",
+      "msg": "Authority already revoked"
+    },
+    {
+      "code": 6027,
+      "name": "InvalidCascadeChild",
+      "msg": "Invalid cascade child account"
+    },
+    {
+      "code": 6028,
+      "name": "EscrowNotOpen",
+      "msg": "Escrow is not open"
+    },
+    {
+      "code": 6029,
+      "name": "EscrowConditionFailed",
+      "msg": "Escrow condition not satisfied"
+    },
+    {
+      "code": 6030,
+      "name": "EscrowExpired",
+      "msg": "Escrow has expired"
+    },
+    {
+      "code": 6031,
+      "name": "EscrowCancelUnauthorized",
+      "msg": "Only payer may cancel this escrow"
+    },
+    {
+      "code": 6032,
+      "name": "EscrowIdMismatch",
+      "msg": "Escrow id mismatch"
+    },
+    {
+      "code": 6033,
+      "name": "OrgNotActive",
+      "msg": "Organization is not active"
+    },
+    {
+      "code": 6034,
+      "name": "TreasuryConservation",
+      "msg": "Treasury conservation violated"
+    },
+    {
+      "code": 6035,
+      "name": "InvalidRemainingAccounts",
+      "msg": "Invalid remaining accounts layout"
+    },
+    {
+      "code": 6036,
+      "name": "InvalidShareBps",
+      "msg": "Invalid share_bps"
+    },
+    {
+      "code": 6037,
+      "name": "ShareBpsExceedsMax",
+      "msg": "share_bps sum would exceed 10000"
+    },
+    {
+      "code": 6038,
+      "name": "OrgNotClosed",
+      "msg": "Organization is not closed"
+    },
+    {
+      "code": 6039,
+      "name": "InvalidPayload",
+      "msg": "Invalid payload"
+    },
+    {
+      "code": 6040,
+      "name": "ReceiptIdMismatch",
+      "msg": "Receipt ID mismatch"
+    },
+    {
+      "code": 6041,
+      "name": "ReceiptChainMismatch",
+      "msg": "Receipt chain mismatch"
+    },
+    {
+      "code": 6042,
+      "name": "InsufficientBond",
+      "msg": "Insufficient bond amount"
+    },
+    {
+      "code": 6043,
+      "name": "BondNotActive",
+      "msg": "Authority bond not active"
+    },
+    {
+      "code": 6044,
+      "name": "AuthorityNotSlashed",
+      "msg": "Authority bond not slashed"
+    },
+    {
+      "code": 6045,
+      "name": "AuthorityNotExpired",
+      "msg": "Authority has not expired"
     }
   ],
   "types": [
     {
-      "name": "Config",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "admin",
-            "type": "pubkey"
-          },
-          {
-            "name": "aeon_mint",
-            "type": "pubkey"
-          },
-          {
-            "name": "authority_counter",
-            "type": "u64"
-          },
-          {
-            "name": "escrow_counter",
-            "type": "u64"
-          },
-          {
-            "name": "org_counter",
-            "type": "u64"
-          },
-          {
-            "name": "receipt_counter",
-            "type": "u64"
-          },
-          {
-            "name": "min_solvency_bps",
-            "type": "u16"
-          },
-          {
-            "name": "paused",
-            "type": "bool"
-          },
-          {
-            "name": "bump",
-            "type": "u8"
-          }
-        ]
-      }
-    },
-    {
       "name": "AgentIdentity",
+      "docs": [
+        "On-chain agent registry entry."
+      ],
       "type": {
         "kind": "struct",
         "fields": [
@@ -1085,51 +3017,22 @@
       }
     },
     {
-      "name": "Cri",
+      "name": "AgentRegistered",
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "agent",
             "type": "pubkey"
-          },
-          {
-            "name": "successful_settlements",
-            "type": "u64"
-          },
-          {
-            "name": "failed_settlements",
-            "type": "u64"
-          },
-          {
-            "name": "successful_commitments",
-            "type": "u64"
-          },
-          {
-            "name": "failed_commitments",
-            "type": "u64"
-          },
-          {
-            "name": "volume_settled",
-            "type": "u64"
-          },
-          {
-            "name": "last_active_slot",
-            "type": "u64"
-          },
-          {
-            "name": "created_slot",
-            "type": "u64"
-          },
-          {
-            "name": "bump",
-            "type": "u8"
           }
         ]
       }
     },
     {
       "name": "Authority",
+      "docs": [
+        "Scoped spending authority with hierarchical delegation."
+      ],
       "type": {
         "kind": "struct",
         "fields": [
@@ -1143,10 +3046,16 @@
           },
           {
             "name": "parent_id",
+            "docs": [
+              "0 = root (no parent)."
+            ],
             "type": "u64"
           },
           {
             "name": "depth",
+            "docs": [
+              "Root depth = 0; max = 3."
+            ],
             "type": "u8"
           },
           {
@@ -1202,10 +3111,54 @@
           },
           {
             "name": "expiry_slot",
+            "docs": [
+              "0 = never expires."
+            ],
             "type": "u64"
           },
           {
             "name": "status",
+            "docs": [
+              "0=Active 1=Revoked 2=Expired 3=Exhausted."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "bond_amount",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AuthorityBond",
+      "docs": [
+        "Bond locking funds for an authority."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority_id",
+            "type": "u64"
+          },
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "status",
+            "docs": [
+              "0=active, 1=slashed"
+            ],
             "type": "u8"
           },
           {
@@ -1216,7 +3169,241 @@
       }
     },
     {
+      "name": "AuthorityExpired",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority_id",
+            "type": "u64"
+          },
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "expired_slot",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AuthorityIssued",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority_id",
+            "type": "u64"
+          },
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "budget",
+            "type": "u64"
+          },
+          {
+            "name": "parent_id",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AuthorityRevoked",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority_id",
+            "type": "u64"
+          },
+          {
+            "name": "cascade",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "BondSlashed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority_id",
+            "type": "u64"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "slasher",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Config",
+      "docs": [
+        "Global protocol configuration."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": "pubkey"
+          },
+          {
+            "name": "aeon_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "authority_counter",
+            "type": "u64"
+          },
+          {
+            "name": "escrow_counter",
+            "type": "u64"
+          },
+          {
+            "name": "org_counter",
+            "type": "u64"
+          },
+          {
+            "name": "receipt_counter",
+            "type": "u64"
+          },
+          {
+            "name": "min_solvency_bps",
+            "type": "u16"
+          },
+          {
+            "name": "paused",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ConfigPaused",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ConfigUnpaused",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cri",
+      "docs": [
+        "Cryptographic Reputation Index — non-transferable, bound to agent."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "successful_settlements",
+            "type": "u64"
+          },
+          {
+            "name": "failed_settlements",
+            "type": "u64"
+          },
+          {
+            "name": "successful_commitments",
+            "type": "u64"
+          },
+          {
+            "name": "failed_commitments",
+            "type": "u64"
+          },
+          {
+            "name": "volume_settled",
+            "type": "u64"
+          },
+          {
+            "name": "last_active_slot",
+            "type": "u64"
+          },
+          {
+            "name": "created_slot",
+            "type": "u64"
+          },
+          {
+            "name": "last_receipt_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "receipt_count",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CriUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "successful_settlements",
+            "type": "u64"
+          },
+          {
+            "name": "volume_settled",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
       "name": "Escrow",
+      "docs": [
+        "Conditional payment lock metadata."
+      ],
       "type": {
         "kind": "struct",
         "fields": [
@@ -1238,6 +3425,9 @@
           },
           {
             "name": "authority_id",
+            "docs": [
+              "0 = no authority required."
+            ],
             "type": "u64"
           },
           {
@@ -1251,6 +3441,9 @@
           },
           {
             "name": "condition_type",
+            "docs": [
+              "0=immediate 1=receipt 2=oracle 3=multisig 4=timeout."
+            ],
             "type": "u8"
           },
           {
@@ -1264,6 +3457,9 @@
           },
           {
             "name": "status",
+            "docs": [
+              "0=Open 1=Released 2=Cancelled 3=Expired."
+            ],
             "type": "u8"
           },
           {
@@ -1272,6 +3468,9 @@
           },
           {
             "name": "expiry_slot",
+            "docs": [
+              "0 = no expiry."
+            ],
             "type": "u64"
           },
           {
@@ -1286,7 +3485,251 @@
       }
     },
     {
+      "name": "EscrowCancelled",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "escrow_id",
+            "type": "u64"
+          },
+          {
+            "name": "payer",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "EscrowCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "escrow_id",
+            "type": "u64"
+          },
+          {
+            "name": "payer",
+            "type": "pubkey"
+          },
+          {
+            "name": "payee",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "EscrowReleased",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "escrow_id",
+            "type": "u64"
+          },
+          {
+            "name": "payee",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MemberJoined",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "org_id",
+            "type": "u64"
+          },
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "role",
+            "type": "u8"
+          },
+          {
+            "name": "share_bps",
+            "type": "u16"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MemberShareUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "org_id",
+            "type": "u64"
+          },
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "old_share_bps",
+            "type": "u16"
+          },
+          {
+            "name": "new_share_bps",
+            "type": "u16"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OrgCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "org_id",
+            "type": "u64"
+          },
+          {
+            "name": "creator",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OrgDeposited",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "org_id",
+            "type": "u64"
+          },
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OrgDissolved",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "org_id",
+            "type": "u64"
+          },
+          {
+            "name": "total_distributed",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OrgMember",
+      "docs": [
+        "Membership record inside an organization."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "org_id",
+            "type": "u64"
+          },
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "role",
+            "docs": [
+              "0=Admin 1=Member 2=Viewer."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "share_bps",
+            "docs": [
+              "Residual share on dissolve; sum across members ≤ 10000."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OrgResidualReclaimed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "org_id",
+            "type": "u64"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "destination",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OrgSplitEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "org_id",
+            "type": "u64"
+          },
+          {
+            "name": "total",
+            "type": "u64"
+          },
+          {
+            "name": "recipient_count",
+            "type": "u16"
+          }
+        ]
+      }
+    },
+    {
       "name": "Organization",
+      "docs": [
+        "Multi-agent organization / swarm."
+      ],
       "type": {
         "kind": "struct",
         "fields": [
@@ -1313,10 +3756,16 @@
           },
           {
             "name": "total_share_bps",
+            "docs": [
+              "Sum of all member share_bps; must stay ≤ 10000."
+            ],
             "type": "u16"
           },
           {
             "name": "status",
+            "docs": [
+              "0=Active 1=Dissolving 2=Closed."
+            ],
             "type": "u8"
           },
           {
@@ -1335,29 +3784,134 @@
       }
     },
     {
-      "name": "OrgMember",
+      "name": "PaymentSettled",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "org_id",
-            "type": "u64"
-          },
-          {
-            "name": "agent",
+            "name": "payer",
             "type": "pubkey"
           },
           {
-            "name": "role",
+            "name": "payee",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "authority_id",
+            "type": "u64"
+          },
+          {
+            "name": "category",
+            "type": {
+              "array": [
+                "u8",
+                16
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Receipt",
+      "docs": [
+        "Optional high-value provenance receipt."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "receipt_id",
+            "type": "u64"
+          },
+          {
+            "name": "receipt_type",
             "type": "u8"
           },
           {
-            "name": "share_bps",
-            "type": "u16"
+            "name": "actor",
+            "type": "pubkey"
+          },
+          {
+            "name": "slot",
+            "type": "u64"
+          },
+          {
+            "name": "payload_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "prev_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
           },
           {
             "name": "bump",
             "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ReceiptCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "receipt_id",
+            "type": "u64"
+          },
+          {
+            "name": "actor",
+            "type": "pubkey"
+          },
+          {
+            "name": "receipt_type",
+            "type": "u8"
+          },
+          {
+            "name": "prev_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "slot",
+            "type": "u64"
           }
         ]
       }

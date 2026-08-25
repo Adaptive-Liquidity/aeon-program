@@ -34,6 +34,8 @@ export interface CriAccount {
   volumeSettled: BN;
   lastActiveSlot: BN;
   createdSlot: BN;
+  lastReceiptHash: number[];
+  receiptCount: BN;
   bump: number;
 }
 
@@ -53,6 +55,26 @@ export interface AuthorityAccount {
   requireMinReserve: BN;
   expirySlot: BN;
   status: number;
+  bondAmount: BN;
+  bump: number;
+}
+
+export interface AuthorityBondAccount {
+  authorityId: BN;
+  agent: PublicKey;
+  amount: BN;
+  status: number;
+  bump: number;
+}
+
+export interface ReceiptAccount {
+  receiptId: BN;
+  receiptType: number;
+  actor: PublicKey;
+  slot: BN;
+  payloadHash: number[];
+  prevHash: number[];
+  hash: number[];
   bump: number;
 }
 
@@ -100,7 +122,17 @@ export interface IssueAuthorityParams {
   maxTotal?: number | BN;
   categories?: number[][];
   parentId?: number | BN;
+  /** Override the parent authority account (for testing error conditions). */
+  parentAuthority?: PublicKey;
   expirySlot?: number | BN;
+  /** v0.2: optional bond. When > 0, bond accounts must be provided. */
+  bondAmount?: number | BN;
+  /** Agent's token account funding the bond (source). */
+  agentVault?: PublicKey;
+  /** Bond vault ATA (owned by bond PDA). */
+  bondVault?: PublicKey;
+  aeonMint?: PublicKey;
+  tokenProgram?: PublicKey;
 }
 
 export interface PayParams {
@@ -125,6 +157,30 @@ export interface CreateEscrowParams {
   conditionType?: number;
   conditionData?: number[];
   expirySlot?: number | BN;
+  aeonMint?: PublicKey;
+  tokenProgram?: PublicKey;
+}
+
+export interface CreateReceiptParams {
+  receiptId?: number | BN;
+  receiptType: number;
+  payload: Uint8Array | number[];
+}
+
+export interface ExpireAuthorityParams {
+  authorityId: number | BN;
+  /** Agent who owns the authority (defaults to wallet). */
+  agent?: PublicKey;
+}
+
+export interface SlashBondParams {
+  authorityId: number | BN;
+  /** Bond vault ATA (owned by bond PDA) — source of the slashed funds. */
+  bondVault: PublicKey;
+  /** Destination token account for the slashed funds. */
+  destination: PublicKey;
+  /** Optional: override the slasher signer (defaults to wallet). */
+  slasher?: PublicKey;
   aeonMint?: PublicKey;
   tokenProgram?: PublicKey;
 }

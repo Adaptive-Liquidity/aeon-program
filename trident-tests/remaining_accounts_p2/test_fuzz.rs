@@ -14,7 +14,7 @@ mod fuzz_accounts;
 mod types;
 use types::aeon;
 
-const PROGRAM_ID: Pubkey = pubkey!("8i5E3R2to4R57TEPFs5DmxhDMAUUvWcXjFZup6MnCMEn");
+const PROGRAM_ID: Pubkey = pubkey!("TcZ9MKNw4eGvoe3K75e4M3zCwZCzEsb6WvrS8LqNgdm");
 const SYSTEM_PROGRAM: Pubkey = pubkey!("11111111111111111111111111111111");
 const TOKEN_PROGRAM: Pubkey = pubkey!("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
 

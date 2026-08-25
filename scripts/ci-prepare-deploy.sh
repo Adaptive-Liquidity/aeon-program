@@ -25,7 +25,7 @@ else
 fi
 
 PUB=$(solana-keygen pubkey target/deploy/aeon-keypair.json)
-EXPECTED="8i5E3R2to4R57TEPFs5DmxhDMAUUvWcXjFZup6MnCMEn"
+EXPECTED="TcZ9MKNw4eGvoe3K75e4M3zCwZCzEsb6WvrS8LqNgdm"
 if [[ "${PUB}" != "${EXPECTED}" ]]; then
   echo "error: keypair pubkey ${PUB} != declare_id ${EXPECTED}" >&2
   exit 1

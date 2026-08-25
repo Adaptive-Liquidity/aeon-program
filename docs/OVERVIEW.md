@@ -5,8 +5,8 @@ Agents get identity, scoped spending power, conditional locks, and multi-agent o
 
 | | |
 |--|--|
-| **Program** | Anchor 0.30.1 · 16 instructions |
-| **Program ID** | `8i5E3R2to4R57TEPFs5DmxhDMAUUvWcXjFZup6MnCMEn` |
+| **Program** | Anchor 0.30.1 · 20 instructions |
+| **Program ID** | `TcZ9MKNw4eGvoe3K75e4M3zCwZCzEsb6WvrS8LqNgdm` |
 | **Client** | TypeScript Agent SDK (`client/`) |
 | **Cluster (live)** | [Devnet](./DEVNET.md) |
 | **Safety surface** | [SECURITY_MODEL.md](./SECURITY_MODEL.md) · [stoa/CASE_CATALOG.md](./stoa/CASE_CATALOG.md) |
@@ -22,7 +22,10 @@ AEON enforces **economic policy on-chain** so autonomous agents (ElizaOS, LangGr
 3. **Fail-closed spend** — `pay` and multi-leg `atomic_split` that never mark `spent` if the token CPI fails  
 4. **Conditional lock** — **escrow** with condition types and witness / timeout release  
 5. **Swarm / org** — multi-agent organizations with share-based residual claims and treasury conservation  
-6. **Token-2022 native** — classic SPL and Token-2022 (including transfer-hook denials under Approach A)
+6. **Token-2022 native** — classic SPL and Token-2022 (including transfer-hook denials under Approach A)  
+7. **Provenance** — hash-chained **receipts** bound to CRI (v0.2)  
+8. **Operational safety** — admin **pause** kill switch + scheduled authority **expiry** (v0.2)  
+9. **Economic teeth** — slashable authority **bonds** (v0.2)
 
 Higher layers (AEON-IQ memory, Nexus capability/sandbox, control-panel tools) **consume** this surface. They do not redefine it.
 
@@ -54,8 +57,9 @@ If a design doc sounds like a fixed-return product, it is **out of scope** for t
 └──────────────────────────┬──────────────────────────────────┘
                            │  Anchor instructions
 ┌──────────────────────────▼──────────────────────────────────┐
-│                 AEON program (16 ixs)                       │
-│  Config · AgentIdentity · CRI · Authority · Escrow · Org*   │
+│                 AEON program (20 ixs)                       │
+│  Config · AgentIdentity · CRI · Authority · AuthorityBond   │
+│  Escrow · Org* · Receipt · OracleEntry                      │
 │  Fail-closed: validate policy → transfer_checked → commit   │
 └──────────────────────────┬──────────────────────────────────┘
                            │  Token interface
@@ -72,7 +76,7 @@ If a design doc sounds like a fixed-return product, it is **out of scope** for t
 |---|-------------|------|-------------|
 | 1 | `initialize_config` | Admin binds protocol mint | — |
 | 2 | `register_agent` | Agent identity + CRI | — |
-| 3 | `issue_authority` | Root or child scoped budget | — |
+| 3 | `issue_authority` | Root or child scoped budget (+ optional bond) | — (bond CPI) |
 | 4 | `revoke_authority` | Direct revoke + child cascade | — |
 | 5 | `pay` | Single transfer under authority | **Yes — fail-closed** |
 | 6 | `create_escrow` | Lock to vault under authority | **Yes — fail-closed** |
@@ -86,6 +90,10 @@ If a design doc sounds like a fixed-return product, it is **out of scope** for t
 | 14 | `org_split` | Treasury → member | Yes |
 | 15 | `dissolve_org` | Complete share set required | Yes |
 | 16 | `reclaim_org_residual` | Closed-org residual | Yes |
+| 17 | `create_receipt` | Hash-chained provenance receipt (CRI-bound) | — |
+| 18 | `expire_authority` | Scheduled authority expiry (no account close) | — |
+| 19 | `set_paused` | Admin pause/unpause kill switch | — |
+| 20 | `slash_bond` | Slash authority bond → destination | **Yes — fail-closed** |
 
 **PDA seeds (canonical):**
 
@@ -94,12 +102,14 @@ config          = ["aeon_config"]
 agent_identity  = ["agent", agent]
 cri             = ["cri", agent]
 authority       = ["authority", id_le]
+authority_bond  = ["authority_bond", id_le]   // v0.2
 escrow          = ["escrow", id_le]
 escrow_vault    = ["escrow_vault", id_le]
 org             = ["org", id_le]
 org_treasury    = ["org_treasury", id_le]
 org_member      = ["org_member", id_le, agent]
-receipt         = ["receipt", id_le]   // account layout only — no instruction yet
+receipt         = ["receipt", id_le]
+oracle_entry    = ["oracle_entry", ...]
 ```
 
 ---
@@ -113,6 +123,8 @@ These must always hold. Full treatment: [SECURITY_MODEL.md](./SECURITY_MODEL.md)
 3. **Cascade correctness** — revoke remaining accounts are direct children, same agent, canonical PDAs, writable  
 4. **Org conservation** — Σ `share_bps` ≤ 10000; dissolve set covers total shares (no omitted-member siphon)  
 5. **Mint binding** — token accounts use `config.aeon_mint`; classic and Token-2022 program IDs accepted via interface  
+6. **Receipt chain integrity** (v0.2) — `prev_hash` read from CRI, hash program-computed, sequence enforced  
+7. **Bond fail-closed** (v0.2) — slash validates state before CPI; bond status committed after transfer  
 
 ---
 
@@ -139,13 +151,17 @@ See [stoa/CASE_CATALOG.md](./stoa/CASE_CATALOG.md).
 | Trident remaining_accounts / cascade | `npm run test:fuzz:p2` | PASS (200×40, 0 panics) |
 | Live escrow → org → dissolve | `npm run demo:devnet` | PASS |
 
+> **v0.2 note:** the four new instructions (`create_receipt`, `expire_authority`,
+> `set_paused`, `slash_bond`) are implemented but their NEG-* test surface is **pending**
+> (see BUILD_PLAN Phase 5). Do not claim v0.2 safety coverage until those tests land.
+
 Safety claims in marketing or integration docs should **cite** this surface — not invent stronger guarantees.
 
 ---
 
 ## Client path
 
-The **only recommended client** for v0.1 is the in-repo TypeScript SDK:
+The **only recommended client** is the in-repo TypeScript SDK:
 
 ```ts
 import { AeonClient, categoryFromLabel, CONDITION, ROLE } from "./client";
@@ -153,6 +169,7 @@ import { AeonClient, categoryFromLabel, CONDITION, ROLE } from "./client";
 
 - Hides PDA derivation, next-id counters, and multi-level revoke planning  
 - Supports classic SPL and Token-2022 via `tokenProgram`  
+- v0.2 adds `createReceipt`, `expireAuthority`, `setPaused`, `slashBond`, and the `bondAmount` param on `issueAuthority`  
 - Docs: [`client/README.md`](../client/README.md) · start here: [QUICKSTART.md](./QUICKSTART.md)
 
 ---
@@ -164,6 +181,8 @@ import { AeonClient, categoryFromLabel, CONDITION, ROLE } from "./client";
 | **AEON-IQ** | Memory / indexing of authorities and CRI (read-side consumer) |
 | **Nexus** | WASM sandbox / capability gating **before** on-chain issue/pay |
 | **Control panel** | Operator UX; must not weaken on-chain invariants |
+| **SPX402** | Reputation indexer consuming AEON receipts/events |
+| **Flok** | Product surface (Hire Hall) gated by SPX402 |
 
 Integration notes are deferred stretch work; they must not change program semantics.
 
@@ -178,4 +197,6 @@ Integration notes are deferred stretch work; they must not change program semant
 | Devnet addresses + explorer | [DEVNET.md](./DEVNET.md) |
 | Case-level checklist | [stoa/CASE_CATALOG.md](./stoa/CASE_CATALOG.md) |
 | Spent-on-CPI-fail review | [stoa/CPI_SPENT_INVARIANCE.md](./stoa/CPI_SPENT_INVARIANCE.md) |
+| v0.2 architecture | [FINAL_ARCHITECTURE.md](./FINAL_ARCHITECTURE.md) |
+| v0.2 build plan | [BUILD_PLAN.md](./BUILD_PLAN.md) |
 | Remaining packaging / CI | [PRODUCT_SURFACE_HANDOFF.md](./PRODUCT_SURFACE_HANDOFF.md) |

@@ -59,6 +59,8 @@ pub fn handler(ctx: Context<RegisterAgent>) -> Result<()> {
     cri.volume_settled = 0;
     cri.last_active_slot = slot;
     cri.created_slot = slot;
+    cri.last_receipt_hash = [0u8; 32];
+    cri.receipt_count = 0;
     cri.bump = ctx.bumps.cri;
 
     emit!(AgentRegistered { agent: agent_key });

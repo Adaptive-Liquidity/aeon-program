@@ -14,6 +14,10 @@ pub mod register_agent;
 pub mod release_escrow;
 pub mod revoke_authority;
 pub mod set_member_share;
+pub mod create_receipt;
+pub mod expire_authority;
+pub mod set_paused;
+pub mod slash_bond;
 
 pub use atomic_split::*;
 pub use cancel_escrow::*;
@@ -31,3 +35,7 @@ pub use register_agent::*;
 pub use release_escrow::*;
 pub use revoke_authority::*;
 pub use set_member_share::*;
+pub use create_receipt::*;
+pub use expire_authority::*;
+pub use set_paused::*;
+pub use slash_bond::*;

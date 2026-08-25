@@ -1,8 +1,9 @@
 # AEON Security Model
 
 **Scope:** On-chain AEON program + what the product claims about safety.  
-**Program:** `8i5E3R2to4R57TEPFs5DmxhDMAUUvWcXjFZup6MnCMEn`  
-**Status:** Fail-closed spent **CLOSED** (freeze + transfer-hook HEAVY). No Critical/High open findings from that review.
+**Program:** `TcZ9MKNw4eGvoe3K75e4M3zCwZCzEsb6WvrS8LqNgdm`  
+**Status:** Fail-closed spent **CLOSED** (freeze + transfer-hook HEAVY). No Critical/High open findings from that review.  
+**v0.2 status:** 4 new instructions implemented; their NEG-* test surface is **pending** (see CASE_CATALOG v0.2 section). Do not claim v0.2 safety coverage until those tests land.
 
 This document distinguishes **hard invariants** (must always hold) from **soft / ACCEPTED** model choices.  
 It does **not** claim financial returns, solvency of agents, or mainnet audit completion.
@@ -30,6 +31,8 @@ AEON is an **economic control plane**. Relevant failures:
 | Org siphon | Dissolve without full share set | Reject incomplete dissolve |
 | Mint confusion | Wrong mint / wrong token program | Reject; mint bound to config |
 | Hostile mint | Freeze / transfer-hook reject after policy | Spent and balances unchanged |
+| Receipt forgery | Caller-supplied `prev_hash` breaks chain | `prev_hash` read from CRI, hash program-computed |
+| Bond theft | Slash without valid bond state | Validate state before CPI; fail-closed |
 
 Out of scope for this model doc: wallet key compromise, RPC lying, off-chain agent bugs, market risk of the mint asset.
 
@@ -106,6 +109,30 @@ On-chain cascade is **one level** (direct children). Multi-level trees require c
 
 **Evidence:** NEG-T22-* and pay mint gates — **PASS**.
 
+### H6 — Receipt chain integrity (v0.2)
+
+On `create_receipt`:
+
+- `prev_hash` is **read from CRI** (`cri.last_receipt_hash`), never caller-supplied  
+- `hash = H(domain_sep ‖ receipt_id ‖ type ‖ actor ‖ slot ‖ payload_hash ‖ prev_hash)` is **program-computed**  
+- `payload_hash = sha256(payload)`; payload non-empty and ≤ 1024 bytes  
+- Sequence enforced: `receipt_id == config.receipt_counter + 1`  
+- On success: advance `cri.last_receipt_hash`, `cri.receipt_count`, `cri.last_active_slot`, `config.receipt_counter`  
+
+**Evidence:** source review only — **NEG-RCPT-* tests PENDING** (CASE_CATALOG v0.2).
+
+### H7 — Bond fail-closed (v0.2)
+
+On `slash_bond`:
+
+- Validate authority + bond state **before** any CPI  
+- Bond vault must be owned by the bond PDA (ATA)  
+- Transfer bond → destination, then commit `bond.status = SLASHED`  
+
+**Evidence:** source review only — **NEG-BOND-* tests PENDING** (CASE_CATALOG v0.2).  
+**Known gap:** `issue_authority` must initialize the bond vault as a bond-PDA-owned ATA
+before the transfer (see `docs/PHASE2_BOND_VAULT_FIX.md`). Until fixed, the bond path is broken.
+
 ---
 
 ## 3. Soft / ACCEPTED model (not bugs)
@@ -150,6 +177,7 @@ From [CASE_CATALOG.md](./stoa/CASE_CATALOG.md) (keep catalog authoritative if nu
 | PASS (P2 fuzz targets) | **5** |
 | SKIP | **2** |
 | TODO P2 | **0** |
+| TODO (v0.2 new) | **21** |
 
 Runners:
 
@@ -169,6 +197,7 @@ npm run test:fuzz:p2
 - Safety if upgrade authority is compromised (devnet upgrade authority is live — see [DEVNET.md](./DEVNET.md))  
 - Mainnet readiness or third-party formal audit (deferred)  
 - Yield, APY, emissions, or price of `aeon_mint`  
+- v0.2 receipt/bond safety (test surface pending)  
 
 ---
 
@@ -180,6 +209,7 @@ npm run test:fuzz:p2
 | Upgrade authority | Treat as high-value; prod should use multisig / governance (not specified in v0.1 product surface) |
 | IDL sync | `client/idl/aeon.json` address must equal `declare_id!` |
 | Client ids | Concurrent `authorityId` / `escrowId` / `orgId` races fail safely (account exists); retry with counter |
+| v0.2 layout change | `Authority` + `Cri` gained fields → devnet wiped/redeployed (no migration) |
 
 ---
 
@@ -189,7 +219,8 @@ npm run test:fuzz:p2
 |----------|---------------------------|
 | Agent SDK | Encodes PDAs and cascade planning; must not skip on-chain checks |
 | AEON-IQ | Read/index authorities and CRI; must not claim stronger invariants than CASE_CATALOG |
-| Nexus | Off-chain capability gates **before** issue/pay; cannot replace H1–H5 |
+| Nexus | Off-chain capability gates **before** issue/pay; cannot replace H1–H7 |
+| SPX402 | Consumes receipts/events; must not claim stronger guarantees than H6 |
 
 Changing fail-closed order or relaxing depth/share rules is a **breaking security change**, not a docs tweak.
 
@@ -210,6 +241,7 @@ Unsafe / forbidden without new evidence:
 - [ ] “Impossible to over-issue children” (false — see NEG-AUTH-011)  
 - [ ] “Guaranteed returns / APY / risk-free agent treasury”  
 - [ ] “Transfer hooks fully supported end-to-end” (Approach B not shipped)  
+- [ ] “Receipts / bonds are production-safe” (v0.2 test surface pending)  
 
 ---
 

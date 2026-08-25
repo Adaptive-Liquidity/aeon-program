@@ -10,7 +10,7 @@ pub mod state;
 
 use instructions::*;
 
-declare_id!("8i5E3R2to4R57TEPFs5DmxhDMAUUvWcXjFZup6MnCMEn");
+declare_id!("TcZ9MKNw4eGvoe3K75e4M3zCwZCzEsb6WvrS8LqNgdm");
 
 #[program]
 pub mod aeon {
@@ -33,9 +33,10 @@ pub mod aeon {
         categories: Vec<[u8; 16]>,
         parent_id: u64,
         expiry_slot: u64,
+        bond_amount: u64,
     ) -> Result<()> {
         instructions::issue_authority::handler(
-            ctx, authority_id, budget, max_per_tx, max_total, categories, parent_id, expiry_slot,
+            ctx, authority_id, budget, max_per_tx, max_total, categories, parent_id, expiry_slot, bond_amount,
         )
     }
 
@@ -123,5 +124,26 @@ pub mod aeon {
 
     pub fn reclaim_org_residual(ctx: Context<ReclaimOrgResidual>, org_id: u64) -> Result<()> {
         instructions::reclaim_org_residual::handler(ctx, org_id)
+    }
+
+    pub fn create_receipt(
+        ctx: Context<CreateReceipt>,
+        receipt_id: u64,
+        receipt_type: u8,
+        payload: Vec<u8>,
+    ) -> Result<()> {
+        instructions::create_receipt::handler(ctx, receipt_id, receipt_type, payload)
+    }
+
+    pub fn expire_authority(ctx: Context<ExpireAuthority>, authority_id: u64) -> Result<()> {
+        instructions::expire_authority::handler(ctx, authority_id)
+    }
+
+    pub fn set_paused(ctx: Context<SetPaused>, paused: bool) -> Result<()> {
+        instructions::set_paused::handler(ctx, paused)
+    }
+
+    pub fn slash_bond(ctx: Context<SlashBond>, authority_id: u64) -> Result<()> {
+        instructions::slash_bond::handler(ctx, authority_id)
     }
 }

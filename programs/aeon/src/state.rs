@@ -40,6 +40,8 @@ pub struct Cri {
     pub volume_settled: u64,
     pub last_active_slot: u64,
     pub created_slot: u64,
+    pub last_receipt_hash: [u8; 32],
+    pub receipt_count: u64,
     pub bump: u8,
 }
 
@@ -66,6 +68,7 @@ pub struct Authority {
     pub expiry_slot: u64,
     /// 0=Active 1=Revoked 2=Expired 3=Exhausted.
     pub status: u8,
+    pub bond_amount: u64,
     pub bump: u8,
 }
 
@@ -161,5 +164,27 @@ pub struct Receipt {
     pub payload_hash: [u8; 32],
     pub prev_hash: [u8; 32],
     pub hash: [u8; 32],
+    pub bump: u8,
+}
+
+/// Escrow condition oracle entry.
+#[account]
+#[derive(InitSpace)]
+pub struct OracleEntry {
+    pub is_closed: bool,
+    pub oracle: Pubkey,
+    pub payload_hash: [u8; 32],
+    pub bump: u8,
+}
+
+/// Bond locking funds for an authority.
+#[account]
+#[derive(InitSpace)]
+pub struct AuthorityBond {
+    pub authority_id: u64,
+    pub agent: Pubkey,
+    pub amount: u64,
+    /// 0=active, 1=slashed
+    pub status: u8,
     pub bump: u8,
 }

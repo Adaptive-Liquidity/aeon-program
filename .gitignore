@@ -17,3 +17,21 @@ coverage/
 fuzzing_*.json
 fuzzing_*.html
 trident_logs_*.log
+
+# ── Team / agent orchestration (working state, NOT product) ──
+TEAM/
+.agents/
+AGENTS.md
+
+# ── Build scaffolding (WSL2 toolchain + patched deps) ──
+anchor-syn-patched/
+anchor-syn.tar.gz
+build.sh
+install.sh
+
+# ── Scratch / one-off artifacts ──
+pda_calc/
+ollama_gemini_chat/
+message_to_ollama.md
+aeon_v0.2_handoff.md
+*.lnk
