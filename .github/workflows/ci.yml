@@ -81,7 +81,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Cache cargo / platform-tools
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry
@@ -135,7 +135,7 @@ jobs:
         run: npm ci
 
       - name: Cache cargo / solana / anchor
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry
@@ -188,7 +188,7 @@ jobs:
         run: npm ci
 
       - name: Cache cargo / solana / anchor
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry
